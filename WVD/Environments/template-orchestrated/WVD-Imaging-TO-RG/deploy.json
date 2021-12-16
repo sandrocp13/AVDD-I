@@ -1,0 +1,565 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        // Resource Group
+        "rgParameters": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        // User Assigned Identity (MSI)
+        "msiParameters": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        // Shared Image Gallery
+        "sigParameters": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        // Shared Image Definition
+        "sidParameters": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        // Role Assignment (Subscription contributor)
+        "roleParameters": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        // Image template
+        "imgParameters": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        // Deployment Script
+        "deploymentScriptParameters": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        // Shared
+        "location": {
+            "type": "string",
+            "defaultValue": "[deployment().location]",
+            "metadata": {
+                "description": "Optional. Location of the deployment."
+            }
+        },
+        "componentStorageAccountId": {
+            "type": "string",
+            "defaultValue": "<ReplaceWith-ComponentStorageAccountId>",
+            "metadata": {
+                "description": "Optional. Resource ID of the storage account that stores all the components."
+            }
+        },
+        "componentsStorageContainerName": {
+            "type": "string",
+            "defaultValue": "<ReplaceWith-ComponentsStorageAccountContainer>",
+            "metadata": {
+                "description": "Optional. Name of the storage container the module components will be stored in."
+            }
+        },
+        "componentsStorageContainerIsPrivate": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Optional. Validity in hours for the SAS token (in case the components storage account is private). If it's set to false, no SAS token will be generated."
+            }
+        },
+        "sasTokenValidityLength": {
+            "defaultValue": "PT8H",
+            "type": "string",
+            "metadata": {
+                "description": "Optional. SAS token validity length. Usage: 'PT8H' - valid for 8 hours; 'P5D' - valid for 5 days; 'P1Y' - valid for 1 year. When not provided, the SAS token will be valid for 8 hours."
+            }
+        },
+        "baseTime": {
+            "type": "string",
+            "defaultValue": "[utcNow('u')]",
+            "metadata": {
+                "description": "Generated. Do not provide a value! This date value is used to generate a SAS token to access the modules."
+            }
+        },
+        "lockForDeletion": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Optional. Whether or not to put deletion lock on all resources/resource group defined in this template."
+            }
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+            },
+            "metadata": {
+                "description": "Optional. Tags to be applied on all resources/resource groups in this deployment."
+            }
+        }
+    },
+    "variables": {
+        // Location of components
+        "componentsBaseUrl": "[concat('https://', split(parameters('componentStorageAccountId'), '/')[8], '.blob.core.windows.net/', parameters('componentsStorageContainerName'))]",
+        "modulesPath": "[concat(variables('componentsBaseUrl'), '/Modules/ARM/')]",
+
+        // SAS token validity calculation - DO NOT CHANGE THESE VALUES !
+        "accountSasProperties": {
+            "signedServices": "b", //Blob (b), Queue (q), Table (t), File (f).
+            "signedPermission": "r", //Read (r), Write (w), Delete (d), List (l), Add (a), Create (c), Update (u) and Process (p)
+            "signedExpiry": "[dateTimeAdd(parameters('baseTime'), parameters('sasTokenValidityLength'))]", //format: 2017-05-24T10:42:03Z
+            "signedResourceTypes": "o", //Service (s): Access to service-level APIs; Container (c): Access to container-level APIs; Object (o): Access to object-level APIs for blobs, queue messages, table entities, and files.
+            "signedProtocol": "https"
+        },
+
+        // Format basetime. Removes columns, dashes and spaces
+        "formattedTime": "[replace(replace(replace(parameters('baseTime'), ':', ''), '-', ''), ' ', '')]"
+    },
+    "resources": [
+        // Resource Group
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "[concat(deployment().name, '-', parameters('rgParameters').moduleName)]",
+            "location": "[parameters('location')]",
+            "condition": "[parameters('rgParameters').enabled]",
+            "dependsOn": [
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "debugSetting": {
+                    "detailLevel": "requestContent,responseContent"
+                },
+                "templateLink": {
+                    "uri": "[concat(variables('modulesPath'), parameters('rgParameters').moduleName, '/', parameters('rgParameters').moduleVersion, '/deploy.json', if(parameters('componentsStorageContainerIsPrivate'), concat('?', listAccountSas(parameters('componentStorageAccountId'), '2019-04-01', variables('accountSasProperties')).accountSasToken), ''))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "resourceGroupName": {
+                        "value": "[parameters('rgParameters').resourceGroupName]"
+                    },
+                    "lockForDeletion": {
+                        "value": "[if(contains(parameters('rgParameters'), 'lockForDeletion'), parameters('rgParameters').lockForDeletion, parameters('lockForDeletion'))]"
+                    },
+                    "tags": {
+                        "value": "[if(contains(parameters('rgParameters'), 'tags'), union(parameters('tags'), parameters('rgParameters').tags), parameters('tags'))]"
+                    }
+                }
+            }
+        },
+        // User Assigned Identity (MSI)
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "[concat(parameters('msiParameters').moduleName, '-', variables('formattedTime'))]",
+            "condition": "[parameters('msiParameters').enabled]",
+            "resourceGroup": "[parameters('rgParameters').resourceGroupName]",
+            "dependsOn": [
+                "[concat(deployment().name, '-', parameters('rgParameters').moduleName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "debugSetting": {
+                    "detailLevel": "requestContent,responseContent"
+                },
+                "templateLink": {
+                    "uri": "[concat(variables('modulesPath'), parameters('msiParameters').moduleName, '/', parameters('msiParameters').moduleVersion, '/deploy.json', if(parameters('componentsStorageContainerIsPrivate'), concat('?', listAccountSas(parameters('componentStorageAccountId'), '2019-04-01', variables('accountSasProperties')).accountSasToken), ''))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "userMsiName": {
+                        "value": "[parameters('msiParameters').userMsiName]"
+                    },
+                    "lockForDeletion": {
+                        "value": "[if(contains(parameters('msiParameters'), 'lockForDeletion'), parameters('msiParameters').lockForDeletion, parameters('lockForDeletion'))]"
+                    },
+                    "tags": {
+                        "value": "[if(contains(parameters('msiParameters'), 'tags'), union(parameters('tags'), parameters('msiParameters').tags), parameters('tags'))]"
+                    }
+                }
+            }
+        },
+        // Subscription contributor assignment
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "[concat(deployment().name, '-', parameters('roleParameters').moduleName)]",
+            "condition": "[parameters('roleParameters').enabled]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat(parameters('msiParameters').moduleName, '-', variables('formattedTime'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "debugSetting": {
+                    "detailLevel": "requestContent,responseContent"
+                },
+                "templateLink": {
+                    "uri": "[concat(variables('modulesPath'), parameters('roleParameters').moduleName, '/', parameters('roleParameters').moduleVersion, '/deploy.json', if(parameters('componentsStorageContainerIsPrivate'), concat('?', listAccountSas(parameters('componentStorageAccountId'), '2019-04-01', variables('accountSasProperties')).accountSasToken), ''))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "roleAssignments": {
+                        "value": [
+                            {
+                                "roleDefinitionIdOrName": "Contributor",
+                                "principalIds": [
+                                    "[reference(concat(parameters('msiParameters').moduleName, '-', variables('formattedTime'))).outputs.msiPrincipalId.value]"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        // Shared Image Gallery
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "[concat(parameters('sigParameters').moduleName, '-', variables('formattedTime'))]",
+            "condition": "[parameters('sigParameters').enabled]",
+            "resourceGroup": "[parameters('rgParameters').resourceGroupName]",
+            "dependsOn": [
+                "[concat(parameters('msiParameters').moduleName, '-', variables('formattedTime'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "debugSetting": {
+                    "detailLevel": "requestContent,responseContent"
+                },
+                "templateLink": {
+                    "uri": "[concat(variables('modulesPath'), parameters('sigParameters').moduleName, '/', parameters('sigParameters').moduleVersion, '/deploy.json', if(parameters('componentsStorageContainerIsPrivate'), concat('?', listAccountSas(parameters('componentStorageAccountId'), '2019-04-01', variables('accountSasProperties')).accountSasToken), ''))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "galleryName": {
+                        "value": "[parameters('sigParameters').galleryName]"
+                    },
+                    "galleryDescription": {
+                        "value": "[parameters('sigParameters').galleryDescription]"
+                    },
+                    "lockForDeletion": {
+                        "value": "[if(contains(parameters('sigParameters'), 'lockForDeletion'), parameters('sigParameters').lockForDeletion, parameters('lockForDeletion'))]"
+                    },
+                    "tags": {
+                        "value": "[if(contains(parameters('sigParameters'), 'tags'), union(parameters('tags'), parameters('sigParameters').tags), parameters('tags'))]"
+                    }
+                }
+            }
+        },
+        // Shared Image Definition
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "[concat(parameters('sidParameters').moduleName, '-', variables('formattedTime'), '-', copyIndex())]",
+            "condition": "[parameters('sidParameters').enabled]",
+            "resourceGroup": "[parameters('rgParameters').resourceGroupName]",
+            "dependsOn": [
+                "[concat(parameters('sigParameters').moduleName, '-', variables('formattedTime'))]"
+            ],
+            "copy": {
+                "count": "[length(parameters('sidParameters').sidParametersArray)]",
+                "name": "sidcopy"
+            },
+            "properties": {
+                "mode": "Incremental",
+                "debugSetting": {
+                    "detailLevel": "requestContent,responseContent"
+                },
+                "templateLink": {
+                    "uri": "[concat(variables('modulesPath'), parameters('sidParameters').moduleName, '/', parameters('sidParameters').moduleVersion, '/deploy.json', if(parameters('componentsStorageContainerIsPrivate'), concat('?', listAccountSas(parameters('componentStorageAccountId'), '2019-04-01', variables('accountSasProperties')).accountSasToken), ''))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "imageDefinitionName": {
+                        "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].imageDefinitionName]"
+                    },
+                    "galleryName": {
+                        "value": "[reference(concat(parameters('sigParameters').moduleName, '-', variables('formattedTime'))).outputs.galleryName.value]"
+                    },
+                    "osType": {
+                        "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].osType]"
+                    },
+                    "osState": {
+                        "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].osState]"
+                    },
+                    "publisher": {
+                        "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].publisher]"
+                    },
+                    "offer": {
+                        "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].offer]"
+                    },
+                    "sku": {
+                        "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].sku]"
+                    },
+                    "minRecommendedvCPUs": {
+                        "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].minRecommendedvCPUs]"
+                    },
+                    "maxRecommendedvCPUs": {
+                        "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].maxRecommendedvCPUs]"
+                    },
+                    "minRecommendedMemory": {
+                        "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].minRecommendedMemory]"
+                    },
+                    "maxRecommendedMemory": {
+                        "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].maxRecommendedMemory]"
+                    },
+                    "hyperVGeneration": {
+                        "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].hyperVGeneration]"
+                    },
+                    "imageDefinitionDescription": {
+                        "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].imageDefinitionDescription]"
+                    },
+                    // (Optional) If needed, uncomment and specify corresponding parameter values in the parameter filesidParameters object
+                    //
+                    // "eula": {
+                    //     "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].eula]"
+                    // },
+                    // "privacyStatementUri": {
+                    //     "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].privacyStatementUri]"
+                    // },
+                    // "releaseNoteUri": {
+                    //     "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].releaseNoteUri]"
+                    // },
+                    // "productName": {
+                    //     "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].productName]"
+                    // },
+                    // "planName": {
+                    //     "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].planName]"
+                    // },
+                    // "planPublisherName": {
+                    //     "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].planPublisherName]"
+                    // },
+                    // "endOfLife": {
+                    //     "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].endOfLife]"
+                    // },
+                    // "excludedDiskTypes": {
+                    //     "value": "[parameters('sidParameters').sidParametersArray[copyIndex()].excludedDiskTypes]"
+                    // },
+                    "tags": {
+                        "value": "[if(contains(parameters('sidParameters'), 'tags'), union(parameters('tags'), parameters('sidParameters').tags), parameters('tags'))]"
+                    }
+                }
+            }
+        },
+        // Image template
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "[concat(parameters('imgParameters').moduleName, '-', variables('formattedTime'), '-', copyIndex())]",
+            "condition": "[parameters('imgParameters').enabled]",
+            "resourceGroup": "[parameters('rgParameters').resourceGroupName]",
+            "dependsOn": [
+                "[concat(deployment().name, '-', parameters('roleParameters').moduleName)]",
+                "sidcopy"
+            ],
+            "copy": {
+                "count": "[length(parameters('imgParameters').imgParametersArray)]",
+                "name": "imgcopy"
+            },
+            "properties": {
+                "mode": "Incremental",
+                "debugSetting": {
+                    "detailLevel": "requestContent,responseContent"
+                },
+                "templateLink": {
+                    "uri": "[concat(variables('modulesPath'), parameters('imgParameters').moduleName, '/', parameters('imgParameters').moduleVersion, '/deploy.json', if(parameters('componentsStorageContainerIsPrivate'), concat('?', listAccountSas(parameters('componentStorageAccountId'), '2019-04-01', variables('accountSasProperties')).accountSasToken), ''))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "imageTemplateName": {
+                        "value": "[parameters('imgParameters').imgParametersArray[copyIndex()].imageTemplateName]"
+                    },
+                    "userMsiName": {
+                        "value": "[reference(concat(parameters('msiParameters').moduleName, '-', variables('formattedTime'))).outputs.msiName.value]"
+                    },
+                    "buildTimeoutInMinutes": {
+                        "value": "[parameters('imgParameters').imgParametersArray[copyIndex()].buildTimeoutInMinutes]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('imgParameters').imgParametersArray[copyIndex()].vmSize]"
+                    },
+                    "osDiskSizeGB": {
+                        "value": "[parameters('imgParameters').imgParametersArray[copyIndex()].osDiskSizeGB]"
+                    },
+                    "subnetId": {
+                        "value": "[parameters('imgParameters').imgParametersArray[copyIndex()].subnetId]"
+                    },
+                    "imageSource": {
+                        "value": "[parameters('imgParameters').imgParametersArray[copyIndex()].imageSource]"
+                    },
+                    "customizationSteps": {
+                        "value": "[parameters('imgParameters').imgParametersArray[copyIndex()].customizationSteps]"
+                    },
+                    "managedImageName": {
+                        "value": "[parameters('imgParameters').imgParametersArray[copyIndex()].managedImageName]"
+                    },
+                    "unManagedImageName": {
+                        "value": "[parameters('imgParameters').imgParametersArray[copyIndex()].unManagedImageName]"
+                    },
+                    "sigImageDefinitionId": {
+                        "value": "[reference(concat(parameters('sidParameters').moduleName, '-', variables('formattedTime'), '-', copyIndex())).outputs.imageDefinitionResourceId.value]"
+                    },
+                    "imageReplicationRegions": {
+                        "value": "[parameters('imgParameters').imgParametersArray[copyIndex()].imageReplicationRegions]"
+                    },
+                    "lockForDeletion": {
+                        "value": "[if(contains(parameters('imgParameters'), 'lockForDeletion'), parameters('imgParameters').lockForDeletion, parameters('lockForDeletion'))]"
+                    },
+                    "tags": {
+                        "value": "[if(contains(parameters('imgParameters'), 'tags'), union(parameters('tags'), parameters('imgParameters').tags), parameters('tags'))]"
+                    }
+                }
+            }
+        },
+        // Trigger building new image (DeploymentScript)
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "[concat(parameters('deploymentScriptParameters').moduleName, 'Trigger-', variables('formattedTime'), '-',copyIndex())]",
+            "condition": "[parameters('deploymentScriptParameters').enableTriggerNewImage]",
+            "resourceGroup": "[parameters('rgParameters').resourceGroupName]",
+            "dependsOn": [
+                "imgcopy"
+            ],
+            "copy": {
+                "count": "[length(parameters('imgParameters').imgParametersArray)]",
+                "name": "triggerCopy"
+            },
+            "properties": {
+                "mode": "Incremental",
+                "debugSetting": {
+                    "detailLevel": "requestContent,responseContent"
+                },
+                "templateLink": {
+                    "uri": "[concat(variables('modulesPath'), parameters('deploymentScriptParameters').moduleName, '/', parameters('deploymentScriptParameters').moduleVersion, '/deploy.json', if(parameters('componentsStorageContainerIsPrivate'), concat('?', listAccountSas(parameters('componentStorageAccountId'), '2019-04-01', variables('accountSasProperties')).accountSasToken), ''))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "scriptName": {
+                        "value": "[concat('triggerBuild-', reference(concat(parameters('imgParameters').moduleName, '-', variables('formattedTime'), '-', copyIndex())).outputs.imageTemplateName.value)]"
+                    },
+                    "userMsiName": {
+                        "value": "[reference(concat(parameters('msiParameters').moduleName, '-', variables('formattedTime'))).outputs.msiName.value]"
+                    },
+                    "scriptContent": {
+                        "value": "[concat('Invoke-AzResourceAction -ResourceName ', reference(concat(parameters('imgParameters').moduleName, '-', variables('formattedTime'), '-', copyIndex())).outputs.imageTemplateName.value, ' -ResourceGroupName ', parameters('rgParameters').resourceGroupName, ' -ResourceType Microsoft.VirtualMachineImages/imageTemplates -Action Run -Force')]"
+                    },
+                    "timeout": {
+                        "value": "PT30M"
+                    },
+                    "lockForDeletion": {
+                        "value": "[if(contains(parameters('deploymentScriptParameters'), 'lockForDeletion'), parameters('deploymentScriptParameters').lockForDeletion, parameters('lockForDeletion'))]"
+                    },
+                    "tags": {
+                        "value": "[if(contains(parameters('deploymentScriptParameters'), 'tags'), union(parameters('tags'), parameters('deploymentScriptParameters').tags), parameters('tags'))]"
+                    }
+                }
+            }
+        },
+        // Optional: synchronously wait for building new image (DeploymentScript)
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "name": "[concat(parameters('deploymentScriptParameters').moduleName, 'Wait-', variables('formattedTime'), '-',copyIndex())]",
+            "condition": "[parameters('deploymentScriptParameters').enableSyncWaitNewImage]",
+            "resourceGroup": "[parameters('rgParameters').resourceGroupName]",
+            "dependsOn": [
+                "triggerCopy"
+            ],
+            "copy": {
+                "count": "[length(parameters('imgParameters').imgParametersArray)]",
+                "name": "waitCopy"
+            },
+            "properties": {
+                "mode": "Incremental",
+                "debugSetting": {
+                    "detailLevel": "requestContent,responseContent"
+                },
+                "templateLink": {
+                    "uri": "[concat(variables('modulesPath'), parameters('deploymentScriptParameters').moduleName, '/', parameters('deploymentScriptParameters').moduleVersion, '/deploy.json', if(parameters('componentsStorageContainerIsPrivate'), concat('?', listAccountSas(parameters('componentStorageAccountId'), '2019-04-01', variables('accountSasProperties')).accountSasToken), ''))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "scriptName": {
+                        "value": "[concat('waitForBuild-', reference(concat(parameters('imgParameters').moduleName, '-', variables('formattedTime'), '-', copyIndex())).outputs.imageTemplateName.value)]"
+                    },
+                    "userMsiName": {
+                        "value": "[reference(concat(parameters('msiParameters').moduleName, '-', variables('formattedTime'))).outputs.msiName.value]"
+                    },
+                    "scriptContent": {
+                        "value": "
+                        param(
+                            [string] [Parameter(Mandatory=$true)] $ResourceGroupName,
+                            [string] [Parameter(Mandatory=$true)] $ImageTemplateName
+                        )
+
+                        do {
+                            # Step 1: Get Azure Context
+                            $currentAzureContext = Get-AzContext
+
+                            # Step 2: Get instance profile
+                            $azureRmProfile = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile
+                            $profileClient = New-Object Microsoft.Azure.Commands.ResourceManager.Common.RMProfileClient($azureRmProfile)
+
+                            # Step 3: Get access token
+                            Write-Verbose (\"Tenant: {0}\" -f $currentAzureContext.Subscription.Name)
+                            $token = $profileClient.AcquireAccessToken($currentAzureContext.Tenant.TenantId)
+                            $accessToken = $token.AccessToken
+                            $managementEp = $currentAzureContext.Environment.ResourceManagerUrl
+                            $urlBuildStatus = [System.String]::Format(\"{0}subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.VirtualMachineImages/imageTemplates/{3}?api-version=2020-02-14\", $managementEp, $currentAzureContext.Subscription.Id, $ResourceGroupName, $ImageTemplateName)
+
+                            # Step 4: Invoke REST API
+                            $buildStatusResult = Invoke-WebRequest -Method GET  -Uri $urlBuildStatus -UseBasicParsing -Headers  @{\"Authorization\" = (\"Bearer \" + $accessToken) } -ContentType application/json
+
+                            # Step 5: Check success
+                            $content = $buildStatusResult.Content | ConvertFrom-Json
+                            $Content.properties.lastRunStatus
+                            if ($Content.properties.lastRunStatus.runState -ne \"Running\")
+                            {
+                                break
+                            }
+                            Start-Sleep 5
+
+                        } while ($true)
+
+                        $Duration = New-TimeSpan -Start $Content.properties.lastRunStatus.startTime -End $Content.properties.lastRunStatus.endTime
+
+                        Write-Output \"It took $($Duration.TotalMinutes) minutes to build and distribute the image.\"
+                        "
+                    },
+                    "arguments": {
+                        "value": "[concat(' -ResourceGroupName ', parameters('rgParameters').resourceGroupName, ' -ImageTemplateName ', reference(concat(parameters('imgParameters').moduleName, '-', variables('formattedTime'), '-', copyIndex())).outputs.imageTemplateName.value)]"
+                    },
+                    "timeout": {
+                        "value": "PT4H"
+                    }
+                },
+                "lockForDeletion": {
+                    "value": "[if(contains(parameters('deploymentScriptParameters'), 'lockForDeletion'), parameters('deploymentScriptParameters').lockForDeletion, parameters('lockForDeletion'))]"
+                },
+                "tags": {
+                    "value": "[if(contains(parameters('deploymentScriptParameters'), 'tags'), union(parameters('tags'), parameters('deploymentScriptParameters').tags), parameters('tags'))]"
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "sasExpiryDateTime": {
+            "type": "string",
+            "value": "[if(parameters('componentsStorageContainerIsPrivate'),variables('accountSasProperties').signedExpiry,'')]"
+        },
+        "imageTemplateName": {
+            "type": "array",
+            "copy": {
+                "count": "[length(parameters('imgParameters').imgParametersArray)]",
+                "input": "[reference(concat(parameters('imgParameters').moduleName, '-', variables('formattedTime'), '-', copyIndex())).outputs.imageTemplateName.value]"
+            }
+        },
+        "commandExecuted": {
+            "type": "array",
+            "copy": {
+                "count": "[length(parameters('imgParameters').imgParametersArray)]",
+                "input": "[reference(concat(parameters('imgParameters').moduleName, '-', variables('formattedTime'), '-', copyIndex())).outputs.runThisCommand.value]"
+            }
+        }
+    }
+}

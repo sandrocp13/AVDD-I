@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "hostpoolName": {
+            "value": "<ReplaceWith-HostpoolName>"
+        },
+        "hostpoolFriendlyName": {
+            "value": ""
+        },
+        "hostpoolDescription": {
+            "value": ""
+        },
+        "hostpoolType": {
+            "value": "<ReplaceWith-HostpoolType>"
+        },
+        "personalDesktopAssignmentType": {
+            "value": ""
+        },
+        "maxSessionLimit": {
+            "value": <ReplaceWith-MaxSessionLimit>
+        },
+        "loadBalancerType": {
+            "value": "<ReplaceWith-LoadBalancerType>"
+        },
+        "startVMOnConnect": {
+            "value": false
+        }
+        "customRdpProperty": {
+            "value": "audiocapturemode:i:1;audiomode:i:0;camerastoredirect:s:*;drivestoredirect:s:;redirectclipboard:i:1;redirectcomports:i:1;redirectprinters:i:1;redirectsmartcards:i:1;screen mode id:i:2;"
+        },
+        "vmTemplate": {
+            "value": <ReplaceWith-VmTemplate>
+        },
+        "validationEnviroment": {
+            "value": <ReplaceWith-ValidationEnviroment>
+        },
+        "workspaceId": {
+            "value": "<ReplaceWith-WorkspaceId>"
+        }
+    }
+}

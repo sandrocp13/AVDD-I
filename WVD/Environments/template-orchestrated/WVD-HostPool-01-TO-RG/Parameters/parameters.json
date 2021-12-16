@@ -1,0 +1,250 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Shared
+    "wvdLocation": {
+      "value": "<ReplaceWith-WvdLocation>"
+    },
+    "workspaceId": {
+      "value": "<ReplaceWith-WorkspaceId>"
+    },
+    "enableWvdResources": {
+      "value": false // updated by pipeline
+    },
+    "enableVmResources": {
+      "value": false // updated by pipeline
+    },
+    "enableVmExtensions": {
+      "value": false // updated by pipeline
+    },
+    "enablePostVmResources": {
+      "value": false // updated by pipeline
+    },
+    // Resource Group
+    "rgParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "ResourceGroup",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "resourceGroupName": "<ReplaceWith-ResourceGroupName>"
+      }
+    },
+    // Host Pool
+    "hostPoolParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "WvdHostPools",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "name": "<ReplaceWith-Name>",
+        "hostpoolFriendlyName": "<ReplaceWith-HostpoolFriendlyName>",
+        "hostpoolDescription": "<ReplaceWith-HostpoolDescription>",
+        "hostpoolType": "<ReplaceWith-HostpoolType>",
+        "personalDesktopAssignmentType": "",
+        "maxSessionLimit": <ReplaceWith-MaxSessionLimit>,
+        "loadBalancerType": "<ReplaceWith-LoadBalancerType>",
+        "customRdpProperty": "audiocapturemode:i:1;audiomode:i:0;camerastoredirect:s:*;drivestoredirect:s:;redirectclipboard:i:1;redirectcomports:i:1;redirectprinters:i:1;redirectsmartcards:i:1;screen mode id:i:2;",
+        "validationEnviroment": <ReplaceWith-ValidationEnviroment>,
+        "startVMOnConnect": false
+      }
+    },
+    // App Groups
+    "appGroupParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "WvdApplicationGroups",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "agParametersArray": [
+          // Desktop
+          {
+            "name": "<ReplaceWith-Name>",
+            "appGroupType": "Desktop",
+            "appGroupFriendlyName": "<ReplaceWith-AppGroupFriendlyName>",
+            "appGroupDescription": "<ReplaceWith-AppGroupDescription>",
+            "roleAssignments": [
+              {
+                "roleDefinitionIdOrName": "Desktop Virtualization User",
+                "principalIds": [
+                  "<ReplaceWith-PrincipalId>"
+                ]
+              }
+            ]
+          },
+          // RemoteApp
+          {
+            "name": "<ReplaceWith-Name>",
+            "appGroupType": "RemoteApp",
+            "appGroupFriendlyName": "<ReplaceWith-AppGroupFriendlyName>",
+            "appGroupDescription": "<ReplaceWith-AppGroupDescription>",
+            "roleAssignments": [
+              {
+                "roleDefinitionIdOrName": "Desktop Virtualization User",
+                "principalIds": [
+                  "<ReplaceWith-PrincipalId>"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    // Workspace
+    "workspaceParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "WvdWorkspaces",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "name": "<ReplaceWith-Name>",
+        "workspaceFriendlyName": "<ReplaceWith-WorkspaceFriendlyName>",
+        "workspaceDescription": "<ReplaceWith-WorkspaceDescription>"
+      }
+    },
+    // Virtual Machines (Session Hosts)
+    "vmParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "VirtualMachines",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "vmNamePrefix": "<ReplaceWith-VmNamePrefix>",
+        "vmNumberOfInstances": <ReplaceWith-VmNumberOfInstances>,
+        "vmInitialNumber": <ReplaceWith-VmInitialNumber>,
+        "vmSize": "<ReplaceWith-VmSize>", //e.g. "Standard_D2s_v3"
+        "imageReference": {
+          "id": "<ReplaceWith-Id>"
+          //"publisher": "<ReplaceWith-Publisher>",
+          //"offer": "<ReplaceWith-Offer>",
+          //"sku": "<ReplaceWith-Sku>",
+          //"version": "<ReplaceWith-Version>"
+        },
+        "osDisk": {
+          "createOption": "fromImage",
+          "diskSizeGB": "<ReplaceWith-DiskSizeGB>",
+          "managedDisk": {
+            "storageAccountType": "<ReplaceWith-StorageAccountType>"
+          }
+        },
+        "adminUsername": "<ReplaceWith-AdminUsername>",
+        "adminPassword": {
+          "keyVault": {
+            "id": "<ReplaceWith-Id>"
+          },
+          "secretName": "<ReplaceWith-SecretName>"
+        },
+        "availabilitySetName": "<ReplaceWith-AvailabilitySetName>",
+        "maxNumberOfVmsPerAvSet": <ReplaceWith-MaxNumberOfVmsPerAvSet>,
+        // "useAvailabilityZone": <ReplaceWith-UseAvailabilityZone>,
+        "windowsConfiguration": {
+          "timeZone": "<ReplaceWith-TimeZone>"
+        },
+        "nicConfigurations": [
+          {
+            "nicSuffix": "<ReplaceWith-NicSuffix>", //e.g. -nic-01
+            "ipConfigurations": [
+              {
+                "name": "<ReplaceWith-Name>",
+                "subnetId": "<ReplaceWith-SubnetId>"
+              }
+            ]
+          }
+        ],
+        "domainName": "<ReplaceWith-DomainName>",
+        "domainJoinUser": "<ReplaceWith-DomainJoinUser>",
+        "domainJoinPassword": {
+          "keyVault": {
+            "id": "<ReplaceWith-Id>"
+          },
+          "secretName": "<ReplaceWith-SecretName>"
+        },
+        "domainJoinOU": "<ReplaceWith-DomainJoinOU>",
+        "domainJoinRestart": true, // Required to pull GPOs
+        "windowsScriptExtensionFileData": [
+          {
+            "uri": "<ReplaceWith-Uri>",
+            "storageAccountId": "<ReplaceWith-StorageAccountId>"
+          }
+        ]
+      }
+    },
+    // Applications
+    "appParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "WvdApplications",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "appParametersArray": [
+          {
+            "appGroupName": "<ReplaceWith-AppGroupName>",
+            "applications": [
+              {
+                "name": "<ReplaceWith-Name>",
+                "description": "<ReplaceWith-Description>",
+                "friendlyName": "<ReplaceWith-FriendlyName>",
+                "filePath": "<ReplaceWith-FilePath>",
+                "commandLineSetting": "<ReplaceWith-CommandLineSetting>",
+                "commandLineArguments": "",
+                "showInPortal": <ReplaceWith-ShowInPortal>,
+                "iconPath": "<ReplaceWith-IconPath>",
+                "iconIndex": <ReplaceWith-IconIndex>
+              }
+              // Example Teams
+              //   ,{
+              //     "name": "Microsoft Teams",
+              //     "description": "Microsoft Teams by ARM template",
+              //     "friendlyName": "Microsoft Teams",
+              //     "filePath": "C:\\Program Files (x86)\\Microsoft\\Teams\\current\\Teams.exe",
+              //     "commandLineSetting": "DoNotAllow",
+              //     "commandLineArguments": "",
+              //     "showInPortal": true,
+              //     "iconPath": "C:\\Program Files (x86)\\Microsoft\\Teams\\current\\Teams.exe",
+              //     "iconIndex": 0
+              // }
+            ]
+          }
+        ]
+      }
+    },
+    // Scaling Scheduler (Auto Scaling)
+    "scalingParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "WvdScalingScheduler",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "logicAppName": "<ReplaceWith-LogicAppName>",
+        "webhookURI": {
+          "keyVault": {
+            "id": "<ReplaceWith-Id>"
+          },
+          "secretName": "<ReplaceWith-SecretName>"
+        },
+        "actionSettingsBody": {
+          "ResourceGroupName": "<ReplaceWith-ResourceGroupName>",
+          "HostPoolName": "<ReplaceWith-HostPoolName>",
+          "UtcOffset": "<ReplaceWith-UtcOffset>",
+          "BeginPeakTime": "<ReplaceWith-BeginPeakTime>",
+          "EndPeakTime": "<ReplaceWith-EndPeakTime>",
+          "SessionThresholdPerCPU": "<ReplaceWith-SessionThresholdPerCPU>",
+          "MinimumNumberOfRDSH": "<ReplaceWith-MinimumNumberOfRDSH>",
+          "LimitSecondsToForceLogOffUser": "<ReplaceWith-LimitSecondsToForceLogOffUser>",
+          "LogOffMessageTitle": "<ReplaceWith-LogOffMessageTitle>",
+          "LogOffMessageBody": "<ReplaceWith-LogOffMessageBody>",
+          "LAWorkspaceName": "<ReplaceWith-LAWorkspaceName>",
+          "stateStorageAccountName": "<ReplaceWith-StateStorageAccountName>",
+          "stateTableName": "<ReplaceWith-StateTableName>"
+        },
+        "recurrenceInterval": <ReplaceWith-RecurrenceInterval>
+      }
+    }
+    // ,
+    // Shared
+    // "tags": {
+    //   "value": {
+    //     "Environment": "<ReplaceWith-Environment>",
+    //     "Contact": "<ReplaceWith-Contact>",
+    //     "PurchaseOrder": "<ReplaceWith-PurchaseOrder>",
+    //     "CostCenter": "<ReplaceWith-CostCenter>",
+    //     "ServiceName": "<ReplaceWith-ServiceName>",
+    //     "Role": "<ReplaceWith-Role>"
+    //   }
+    // }
+  }
+}

@@ -1,0 +1,97 @@
+#######################################################################
+##                                NOTE                               ##
+## ------------------------------------------------------------------##
+## - These variables are used to configure the pipeline and provide  ##
+##   variables to pipeline scripts                                   ##
+## - Parameters used for resource deployments are located in the     ##
+##   parameter files in the '.\Parameters' folder                    ##
+#######################################################################
+
+variables:
+
+#############
+## GENERAL ##
+#############
+
+  rgFolderPath: '$(orchestrationPath)/WVD-HostPool-01-PO-RG'
+  storageContainerMapPath: 'Parameters/Uploads/assets.config.json'
+  location: <ReplaceWith-Location>
+  secondaryLocation: <ReplaceWith-SecondaryLocation>
+
+#######################
+## PIPELINE CONTROLS ##
+#######################
+#region pipeline controls
+
+# Pipeline Name
+# -------------
+  pipelineName: 'WVD HostPool 01 deployment'
+
+# Deployed Module Specs
+# ---------------------
+  resourceGroupModuleName: ResourceGroup
+  resourceGroupModuleVersion: <ReplaceWith-ResourceGroupModuleVersion>
+
+  wvdHostPoolsModuleName: WvdHostPools
+  wvdHostPoolsModuleVersion: <ReplaceWith-WvdHostPoolsModuleVersion>
+
+  wvdApplicationGroupsModuleName: WvdApplicationGroups
+  wvdApplicationGroupsModuleVersion: <ReplaceWith-WvdApplicationGroupsModuleVersion>
+
+  virtualMachinesModuleName: VirtualMachines
+  virtualMachinesModuleVersion: <ReplaceWith-VirtualMachinesModuleVersion>
+
+  wvdApplicationsModuleName: WvdApplications
+  wvdApplicationsModuleVersion: <ReplaceWith-WvdApplicationsModuleVersion>
+
+  wvdWorkspacesModuleName: WvdWorkspaces
+  wvdWorkspacesModuleVersion: <ReplaceWith-WvdWorkspacesModuleVersion>
+
+  wvdScalingSchedulerModuleName: WvdScalingScheduler
+  wvdScalingSchedulerModuleVersion: <ReplaceWith-WvdScalingSchedulerModuleVersion>
+
+######################
+## SCRIPT VARIABLES ##
+######################
+#region script variables
+
+## ResourceGroup
+  resourceGroupName: <ReplaceWith-ResourceGroupName>
+
+# Host Pool related
+# -----------------
+  HostPoolName: <ReplaceWith-HostPoolName>
+
+# Session Host related
+# --------------------
+  ## Custom Script Extension
+  enableCSE: <ReplaceWith-EnableCSE> # To enable/disable Custom Script Extension
+  profilesStorageAccountName01: <ReplaceWith-ProfilesStorageAccountName01> # Only needed in case CSE is enabled
+  #profilesStorageAccountName02: <ReplaceWith-#profilesStorageAccountName02> # Only needed in case CSE is enabled and an additional storage account is used for profile management
+
+# Imaging
+# -------
+  ## Custom Image
+  # If a custom image reference is provided, it is picked up instead of any provided marketplace image information. If not used, should be set to '' (empty)
+  # Is used for the session host deployment as well as the host-pool image update process (if enabled)
+  customImageReferenceId: <ReplaceWith-CustomImageReferenceId>
+
+  ## Marketplace Image
+  # Is used for the session host deployment as well as the host-pool image update process (if enabled)
+  publisher: <ReplaceWith-Publisher>
+  offer: <ReplaceWith-Offer>
+  sku: <ReplaceWith-Sku>
+  version: <ReplaceWith-Version>
+  imagelocation: <ReplaceWith-Imagelocation> # Required if not using the 'customImageReferenceId' and 'version' equals 'latest'
+
+# Image Lifecycle related
+# -----------------------
+  DeleteVMDeadline: <ReplaceWith-DeleteVMDeadline> # In 'yyyyMMddHHmm'. The deadline after which outdated VMs are delete
+  LogoffDeadline: <ReplaceWith-LogoffDeadline> # In 'yyyyMMddHHmm'. The deadline after which users are log-off by force
+  LogOffMessageTitle: <ReplaceWith-LogOffMessageTitle> # PopUp title shown to users if they are warned of an upcoming imminent log-off
+  LogOffMessageBody: <ReplaceWith-LogOffMessageBody> # PopUp text shown to users if they are warned of an upcoming imminent log-off
+  UtcOffset: <ReplaceWith-UtcOffset> # Time difference to UTC. Enabled handling of different time zones.
+  LAWorkspaceName: '' #'CustomWvdLaWorkspace' # Name of an OMS workspace to send host-pool image update process logs to
+  stateStorageAccountName: <ReplaceWith-StateStorageAccountName>
+  stateTableName: <ReplaceWith-StateTableName>
+#endregion

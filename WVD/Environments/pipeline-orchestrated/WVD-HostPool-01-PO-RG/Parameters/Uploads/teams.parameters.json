@@ -1,0 +1,20 @@
+{
+	"teams": [
+		{
+			"installTeams": true,
+			"configureTeams": true,
+			"teamsRegistrySettings": [
+				{
+					"keyPath": "HKLM:\\SOFTWARE\\Microsoft\\Teams",
+					"keyValues": [
+						{
+							"Name": "IsWVDEnvironment",
+							"Type": "DWORD",
+							"Value": "1"
+						}
+					]
+				}
+			]
+		}
+	]
+}

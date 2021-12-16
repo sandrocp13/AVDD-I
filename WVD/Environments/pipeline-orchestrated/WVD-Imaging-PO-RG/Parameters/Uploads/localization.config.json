@@ -1,0 +1,11 @@
+{
+    "languagesToInstall": [
+        "<ReplaceWith-LanguagesToInstall>" // e.g. "de-DE", "it-IT"
+    ],
+    "osversion": "<ReplaceWith-Osversion>",
+    "primaryOSLanguage": "<ReplaceWith-PrimaryOSLanguage>",
+    "fallbackOSUILanguage": "<ReplaceWith-FallbackOSUILanguage>",
+    "keyboardInputLanguages": [
+        "<ReplaceWith-KeyboardInputLanguages>" // e.g. "0407:00000407", "0410:00000410"
+    ]
+}

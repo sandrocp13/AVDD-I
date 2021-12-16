@@ -1,0 +1,102 @@
+name: $(pipelineName)
+
+parameters:
+- name: enableJobUpdateAssetsStorageAccount
+  displayName: Update Assets Storage Account
+  type: boolean
+  default: true
+- name: enableJobDeployResourceGroup
+  displayName: Deploy Resource Group
+  type: boolean
+  default: true
+- name: enableJobDeployStorageAccount
+  displayName: Deploy Storage Account
+  type: boolean
+  default: true
+- name: enableJobDeployFileSharesBackup
+  displayName: Deploy Azure File Shares Backup
+  type: boolean
+  default: true
+- name: enableJobDeployHelperServer
+  displayName: Deploy Helper Server
+  type: boolean
+  default: true
+- name: targetEnvironment
+  displayName: Environment(s) to deploy to
+  type: string
+  default: SBX
+  values:
+  - SBX
+  - TEST
+  - PRD
+  - All
+
+variables:
+- template: ..\.global\variables.yml
+- template: variables.yml
+
+trigger: none
+
+stages:
+- stage: SBX
+  condition: |
+    and(
+      succeeded(),
+      in('${{ parameters.targetEnvironment }}', 'All', 'SBX')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(SBX)'
+      vmImage: '$(vmImage-SBX)'
+      poolName: '$(poolName-SBX)'
+      serviceConnection: '$(serviceConnection-SBX)'
+      enableJobUpdateAssetsStorageAccount: '${{ parameters.enableJobUpdateAssetsStorageAccount }}'
+      enableJobDeployResourceGroup: '${{ parameters.enableJobDeployResourceGroup }}'
+      enableJobDeployStorageAccount: '${{ parameters.enableJobDeployStorageAccount }}'
+      enableJobDeployFileSharesBackup: '${{ parameters.enableJobDeployFileSharesBackup }}'
+      enableJobDeployHelperServer: '${{ parameters.enableJobDeployHelperServer }}'
+
+- stage: TEST
+  condition: |
+    and(
+      or(
+        succeeded(),
+        in('${{ parameters.targetEnvironment }}', 'TEST')
+      ),
+      in('${{ parameters.targetEnvironment }}', 'All', 'TEST')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(TEST)'
+      vmImage: '$(vmImage-TEST)'
+      poolName: '$(poolName-TEST)'
+      serviceConnection: '$(serviceConnection-TEST)'
+      enableJobUpdateAssetsStorageAccount: '${{ parameters.enableJobUpdateAssetsStorageAccount }}'
+      enableJobDeployResourceGroup: '${{ parameters.enableJobDeployResourceGroup }}'
+      enableJobDeployStorageAccount: '${{ parameters.enableJobDeployStorageAccount }}'
+      enableJobDeployFileSharesBackup: '${{ parameters.enableJobDeployFileSharesBackup }}'
+      enableJobDeployHelperServer: '${{ parameters.enableJobDeployHelperServer }}'
+
+- stage: PRD
+  condition: |
+    and(
+      or(
+        succeeded(),
+        in('${{ parameters.targetEnvironment }}', 'PRD')
+      ),
+      in('${{ parameters.targetEnvironment }}', 'All', 'PRD')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(PRD)'
+      vmImage: '$(vmImage-PRD)'
+      poolName: '$(poolName-PRD)'
+      serviceConnection: '$(serviceConnection-PRD)'
+      enableJobUpdateAssetsStorageAccount: '${{ parameters.enableJobUpdateAssetsStorageAccount }}'
+      enableJobDeployResourceGroup: '${{ parameters.enableJobDeployResourceGroup }}'
+      enableJobDeployStorageAccount: '${{ parameters.enableJobDeployStorageAccount }}'
+      enableJobDeployFileSharesBackup: '${{ parameters.enableJobDeployFileSharesBackup }}'
+      enableJobDeployHelperServer: '${{ parameters.enableJobDeployHelperServer }}'

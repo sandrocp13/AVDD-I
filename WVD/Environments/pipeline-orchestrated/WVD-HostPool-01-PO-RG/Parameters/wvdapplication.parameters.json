@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appGroupName": {
+            "value": "<ReplaceWith-AppGroupName>"
+        },
+        "applications": {
+            "value": [
+                {
+                    "name": "<ReplaceWith-Name>",
+                    "description": "<ReplaceWith-Description>",
+                    "friendlyName": "<ReplaceWith-FriendlyName>",
+                    "filePath": "<ReplaceWith-FilePath>",
+                    "commandLineSetting": "<ReplaceWith-CommandLineSetting>",
+                    "commandLineArguments": "",
+                    "showInPortal": <ReplaceWith-ShowInPortal>,
+                    "iconPath": "<ReplaceWith-IconPath>",
+                    "iconIndex": <ReplaceWith-IconIndex>
+                }
+                // Example Teams
+                //   ,{
+                //     "name": "Microsoft Teams",
+                //     "description": "Microsoft Teams by ARM template",
+                //     "friendlyName": "Microsoft Teams",
+                //     "filePath": "C:\\Program Files (x86)\\Microsoft\\Teams\\current\\Teams.exe",
+                //     "commandLineSetting": "DoNotAllow",
+                //     "commandLineArguments": "",
+                //     "showInPortal": true,
+                //     "iconPath": "C:\\Program Files (x86)\\Microsoft\\Teams\\current\\Teams.exe",
+                //     "iconIndex": 0
+                // }
+            ]
+        }
+    }
+}

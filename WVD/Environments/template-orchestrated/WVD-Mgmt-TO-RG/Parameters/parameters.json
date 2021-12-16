@@ -1,0 +1,156 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // 'Start on connect' role definition
+    "soCRoleDefParameters": {
+      "value": {
+        "enabled": false,
+        "moduleName": "RoleDefinitions",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "roleName": "ReadAndStartVMs",
+        "actions": [
+          "Microsoft.Compute/virtualMachines/start/action",
+          "Microsoft.Compute/virtualMachines/read"
+        ]
+      }
+    },
+    // 'Start on connect' role assignment
+    // Parameter 'RoleAssignments' is constructed during deployment
+    "soCRoleAssignParameters": {
+      "value": {
+        "enabled": false,
+        "moduleName": "RoleAssignments",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>"
+      }
+    },
+    // Resource Group
+    "rgParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "ResourceGroup",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "resourceGroupName": "<ReplaceWith-ResourceGroupName>"
+      }
+    },
+    // Key Vault
+    "kvParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "KeyVault",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "keyVaultName": "<ReplaceWith-KeyVaultName>",
+        "accessPolicies": [
+          {
+            "tenantId": "<ReplaceWith-TenantId>",
+            "objectId": "<ReplaceWith-ServiceConnectionServicePrincipalObjectId>",
+            "permissions": {
+              "keys": [
+                "All"
+              ],
+              "secrets": [
+                "All"
+              ],
+              "certificates": [
+                "All"
+              ]
+            }
+          }
+        ],
+        "vaultSku": "<ReplaceWith-VaultSku>"
+      }
+    },
+    // Storage Account
+    "storAccountParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "StorageAccounts",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "storageAccountName": "<ReplaceWith-StorageAccountName>",
+        "storageAccountKind": "<ReplaceWith-StorageAccountKind>",
+        "storageAccountSku": "<ReplaceWith-StorageAccountSku>",
+        "blobContainers": [
+          {
+            "name": "imagescripts",
+            "publicAccess": "None",
+            "roleAssignments": []
+          },
+          {
+            "name": "storagejoin",
+            "publicAccess": "None",
+            "roleAssignments": []
+          },
+          {
+            "name": "<ReplaceWith-HostPoolName>",
+            "publicAccess": "None",
+            "roleAssignments": []
+          }
+        ],
+        "tables": [
+          "<ReplaceWith-ShortenedHostPoolName>"
+        ]
+      }
+    },
+    // Automation Account
+    "automAccountParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "AutomationAccounts",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "automationAccountName": "<ReplaceWith-AutomationAccountName>"
+      }
+    },
+    // Recovery Services Vault
+    "rsvParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "RecoveryServicesVaults",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "recoveryVaultName": "<ReplaceWith-RecoveryVaultName>",
+        "backupPolicies": [
+          {
+            "name": "<ReplaceWith-PolicyName>",
+            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+            "properties": {
+              "backupManagementType": "AzureStorage",
+              "workloadType": "AzureFileShare",
+              "schedulePolicy": {
+                "schedulePolicyType": "SimpleSchedulePolicy",
+                "scheduleRunFrequency": "Daily",
+                "scheduleRunTimes": [
+                  "2019-11-07T04:30:00Z"
+                ],
+                "scheduleWeeklyFrequency": 0
+              },
+              "retentionPolicy": {
+                "retentionPolicyType": "LongTermRetentionPolicy",
+                "dailySchedule": {
+                  "retentionTimes": [
+                    "2019-11-07T04:30:00Z"
+                  ],
+                  "retentionDuration": {
+                    "count": 30,
+                    "durationType": "Days"
+                  }
+                }
+              },
+              "timeZone": "<ReplaceWith-TimeZone>",
+              "protectedItemsCount": 0
+            }
+          }
+        ]
+      }
+    },
+    // Shared
+    "tags": {
+      "value": {
+        "Environment": "<ReplaceWith-Environment>",
+        "Contact": "<ReplaceWith-Contact>",
+        "PurchaseOrder": "<ReplaceWith-PurchaseOrder>",
+        "CostCenter": "<ReplaceWith-CostCenter>",
+        "ServiceName": "<ReplaceWith-ServiceName>",
+        "Role": "<ReplaceWith-Role>"
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "LogicAppName": {
+            "value": "<ReplaceWith-LogicAppName>"
+        },
+        "webhookURI": {
+            "reference": {
+                "keyVault": {
+                    "id": "<ReplaceWith-Id>"
+                },
+                "secretName": "<ReplaceWith-SecretName>"
+            }
+        },
+        "actionSettingsBody": {
+            "value": {
+                "ResourceGroupName": "<ReplaceWith-ResourceGroupName>",
+                "HostPoolName": "<ReplaceWith-HostPoolName>",
+                "UtcOffset": "<ReplaceWith-UtcOffset>",
+                "BeginPeakTime": "<ReplaceWith-BeginPeakTime>",
+                "EndPeakTime": "<ReplaceWith-EndPeakTime>",
+                "SessionThresholdPerCPU": "<ReplaceWith-SessionThresholdPerCPU>",
+                "MinimumNumberOfRDSH": "<ReplaceWith-MinimumNumberOfRDSH>",
+                "LimitSecondsToForceLogOffUser": "<ReplaceWith-LimitSecondsToForceLogOffUser>",
+                "LogOffMessageTitle": "<ReplaceWith-LogOffMessageTitle>",
+                "LogOffMessageBody": "<ReplaceWith-LogOffMessageBody>",
+                "LAWorkspaceName": "<ReplaceWith-LAWorkspaceName>",
+                "stateStorageAccountName": "<ReplaceWith-StateStorageAccountName>",
+                "stateTableName": "<ReplaceWith-StateTableName>"
+            }
+        },
+        "recurrenceInterval": {
+            "value": <ReplaceWith-RecurrenceInterval>
+        }
+    }
+}

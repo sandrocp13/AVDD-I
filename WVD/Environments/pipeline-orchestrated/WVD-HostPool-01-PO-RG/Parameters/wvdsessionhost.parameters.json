@@ -1,0 +1,107 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmNamePrefix": {
+      "value": "<ReplaceWith-VmNamePrefix>"
+    },
+    "vmNumberOfInstances": {
+      "value": <ReplaceWith-VmNumberOfInstances>
+    },
+    "vmInitialNumber": {
+      "value": <ReplaceWith-VmInitialNumber>
+    },
+    "vmSize": {
+      "value": "<ReplaceWith-VmSize>" // "Standard_D2s_v3"
+    },
+    "osDisk": {
+      "value": {
+        "createOption": "fromImage",
+        "diskSizeGB": "<ReplaceWith-DiskSizeGB>",
+        "managedDisk": {
+          "storageAccountType": "<ReplaceWith-StorageAccountType>"
+        }
+      }
+    },
+    "adminUsername": {
+      "value": "<ReplaceWith-AdminUsername>"
+    },
+    "adminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "<ReplaceWith-Id>"
+        },
+        "secretName": "<ReplaceWith-SecretName>"
+      }
+    },
+    "availabilitySetName": {
+      "value": "<ReplaceWith-AvailabilitySetName>"
+    },
+    "nicConfigurations": {
+      "value": [
+        {
+          "nicSuffix": "<ReplaceWith-NicSuffix>",
+          "ipConfigurations": [
+            {
+              "name": "<ReplaceWith-Name>",
+              "subnetId": "<ReplaceWith-SubnetId>"
+            }
+          ]
+        }
+      ]
+    },
+    "domainName": {
+      "value": "<ReplaceWith-DomainName>"
+    },
+    "domainJoinUser": {
+      "value": "<ReplaceWith-DomainJoinUser>"
+    },
+    "domainJoinPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "<ReplaceWith-Id>"
+        },
+        "secretName": "<ReplaceWith-SecretName>"
+      }
+    },
+    "domainJoinOU": {
+      "value": "<ReplaceWith-DomainJoinOU>"
+    },
+    "domainJoinRestart": {
+      "value": true // Required to pull GPOs
+    },
+    "windowsConfiguration": {
+      "value": {
+        "timeZone": "<ReplaceWith-TimeZone>"
+      }
+    },
+    "dscConfiguration": {
+      "value": {
+        "settings": {
+          "wmfVersion": "latest",
+          "configuration": {
+            "url": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration.zip",
+            "script": "Configuration.ps1",
+            "function": "AddSessionHost"
+          },
+          "configurationArguments": {
+            "hostPoolName": "<ReplaceWith-HostPoolName>"
+          }
+        },
+        "protectedSettings": {
+          "configurationArguments": {
+            "registrationInfoToken": "<PopulatedInPipeline>"
+          }
+        }
+      }
+    },
+    "windowsScriptExtensionFileData": {
+      "value": [
+        {
+          "uri": "<ReplaceWith-Uri>",
+          "storageAccountId": "<ReplaceWith-StorageAccountId>"
+        }
+      ]
+    }
+  }
+}

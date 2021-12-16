@@ -1,0 +1,63 @@
+#######################################################################
+##                                NOTE                               ##
+## ------------------------------------------------------------------##
+## - These variables are used to configure the pipeline and provide  ##
+##   variables to pipeline scripts                                   ##
+## - Parameters used for resource deployments are located in the     ##
+##   parameter files in the '.\Parameters' folder                    ##
+#######################################################################
+
+variables:
+  #############
+  ## GENERAL ##
+  #############
+
+  rgFolderPath: "$(orchestrationPath)/WVD-AzFilesProfiles-TO-RG"
+  storageContainerMapPath: 'Parameters/Uploads/assets.config.json'
+  location: <ReplaceWith-Location>
+
+  #######################
+  ## PIPELINE CONTROLS ##
+  #######################
+  #region pipeline controls
+
+  # Pipeline Name
+  # -------------
+  pipelineName: "WVD Profile StorageAccount deployment"
+  #endregion
+
+  ######################
+  ## SCRIPT VARIABLES ##
+  ######################
+  #region script variables
+
+  # ResourceGroup related
+  # ---------------------
+  resourcegroupname: <ReplaceWith-Resourcegroupname>
+
+  # Recovery Services Vault related
+  # -------------------------------
+  profilesBackupVault: <ReplaceWith-ProfilesBackupVault>
+  profilesBackupVaultRG: <ReplaceWith-ProfilesBackupVaultRG>
+
+  # Identity-based access for file shares (AD or AADDS)
+  # ------------------------------------------------
+  # Controls the way the authentication towards the FSLogix file shares is set up
+
+  ## Azure ADDS
+  # If Azure ADDS is the provided identity solution, only the storage account is created as part of the pipeline.
+  # The identity-based access for file shares is enabled for Azure ADDS as part of the storage resource deployment.
+  # keyVaultName and helperServerName variables should be set to '' (empty)
+  identityApproach: <ReplaceWith-IdentityApproach>
+  keyVaultName: ""
+  helperServerName: ""
+
+  ## Native AD
+  # If Native AD (ADDS) is the provided identity solution, additional jobs are triggered as part of the pipeline.
+  # The identity-based access for file shares is enabled for Native AD leveraging a domain joined VM, created as part of the pipeline.
+  # keyVaultName is the key vault storing the hybrid admin credentials used to join the storage account.
+  # helperServerName is the name of the domain joined VM which will be created to run the storage account join on behalf of the hybrid admin.
+  # identityApproach: <ReplaceWith-# identityApproach>
+  # keyVaultName: <ReplaceWith-# keyVaultName>
+  # helperServerName: <ReplaceWith-# helperServerName>
+  #endregion

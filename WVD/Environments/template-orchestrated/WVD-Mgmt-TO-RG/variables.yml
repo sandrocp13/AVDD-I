@@ -1,0 +1,89 @@
+#######################################################################
+##                                NOTE                               ##
+## ------------------------------------------------------------------##
+## - These variables are used to configure the pipeline and provide  ##
+##   variables to pipeline scripts                                   ##
+## - Parameters used for resource deployments are located in the     ##
+##   parameter files in the '.\Parameters' folder                    ##
+#######################################################################
+
+variables:
+  #############
+  ## GENERAL ##
+  #############
+
+  - name: rgFolderPath
+    value: "$(orchestrationPath)/WVD-Mgmt-TO-RG"
+
+  - name: location
+    value: <ReplaceWith-Location>
+
+  #######################
+  ## PIPELINE CONTROLS ##
+  #######################
+  #region pipeline controls
+
+  # Pipeline Name
+  # -------------
+  - name: pipelineName
+    value: WVD Management deployment
+  #endregion
+
+  ######################
+  ## SCRIPT VARIABLES ##
+  ######################
+  #region script variables
+
+  # ResourceGroup related
+  # ---------------------
+  - name: resourcegroupname
+    value: <ReplaceWith-Resourcegroupname>
+
+  # Key Vault related
+  # -----------------
+  - name: keyVaultName
+    value: <ReplaceWith-KeyVaultName>
+
+    ## The DevOps variable groups hosting the secrets required for the deployments
+  - group: <ReplaceWith-WVDSecretsGroup>
+
+  - name: domainJoinUserName
+    value: <ReplaceWith-DomainJoinUserName>
+
+    ## Only required to enable Native AD identity-based access for file shares. Can be empty in case of Azure ADDS identity approach.
+  - name: storageJoinUserName
+    value: <ReplaceWith-StorageJoinUserName> # '' if Azure ADDS
+
+  # Storage Account related
+  # -----------------------
+  - name: wvdAssetsStorageAccount
+    value: <ReplaceWith-WvdAssetsStorageAccount>
+
+    ## The folder hosting the files to upload to the assets storage account
+  - name: wvdUploadsPath
+    value: "Workloads/WVD/OrchestrationSources/Uploads"
+
+  # Auto Account related
+  # --------------------
+  - name: AutomationAccountName
+    value: <ReplaceWith-AutomationAccountName>
+
+  - name: ScalingRunbookName
+    value: <ReplaceWith-ScalingRunbookName>
+
+  - name: ScalingWebhookName
+    value: <ReplaceWith-ScalingWebhookName>
+
+  - name: RunAsConnectionSPName
+    value: <ReplaceWith-RunAsConnectionSPName>
+
+  - name: RunAsSelfSignedCertSecretName
+    value: <ReplaceWith-RunAsSelfSignedCertSecretName>
+
+  - name: AutoAccountRunAsCertExpiryInMonths
+    value: <ReplaceWith-AutoAccountRunAsCertExpiryInMonths>
+
+    # Optional. If specified, Log Analytics will be used to configure the custom log table that the runbook PowerShell script can send logs to
+  - name: LAWorkspaceName
+    value: <ReplaceWith-LAWorkspaceName>
+  #endregion

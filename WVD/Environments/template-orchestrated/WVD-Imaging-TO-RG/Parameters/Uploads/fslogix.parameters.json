@@ -1,0 +1,12 @@
+{
+	"fslogix": [
+		{
+			"installFSLogix": true,
+			"configureFSLogix": false,
+			"FSLogixRegistrySettings": [],
+			"FSLogixLocalGroupsSettings": [],
+			"configureNTFSPermissions": false,
+			"NTFSSettings": []
+		}
+	]
+}

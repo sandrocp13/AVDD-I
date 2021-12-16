@@ -1,0 +1,143 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Resource Group
+    "rgParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "ResourceGroup",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "resourceGroupName": "<ReplaceWith-ResourceGroupName>",
+        // Native AD only
+        // "roleAssignments": [
+        //   {
+        //     "roleDefinitionIdOrName": "Reader",
+        //     "principalIds": [
+        //       "<ReplaceWith-PrincipalIDs>"
+        //     ]
+        //   }
+        // ]
+      }
+    },
+    // Storage Accounts
+    "storAccountParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "StorageAccounts",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "identityApproach": "<ReplaceWith-IdentityApproach>",
+        "saParametersArray": [
+          {
+            "storageAccountName": "<ReplaceWith-StorageAccountName>",
+            "storageAccountKind": "<ReplaceWith-StorageAccountKind>",
+            "storageAccountSku": "<ReplaceWith-StorageAccountSku>",
+            "fileShares": [
+              {
+                "name": "<ReplaceWith-Name>",
+                "shareQuota": "<ReplaceWith-ShareQuota>",
+                "roleAssignments": [
+                  {
+                    "roleDefinitionIdOrName": "Storage File Data SMB Share Contributor",
+                    "principalIds": [
+                      "<ReplaceWith-PrincipalIds>"
+                    ]
+                  }
+                ]
+              }
+            ],
+            // Native AD only
+            // "roleAssignments": [
+            //   {
+            //     "roleDefinitionIdOrName": "Storage Account Contributor",
+            //     "principalIds": [
+            //       "<ReplaceWith-PrincipalIDs>"
+            //     ]
+            //   }
+            // ]
+          }
+        ]
+      }
+    },
+    // Virtual Machines (Helper VM)
+    "vmParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "VirtualMachines",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        // "location": "<ReplaceWith-Location>",
+        "vmNames": [
+          "<ReplaceWith-VmNames>"
+        ],
+        "vmSize": "<ReplaceWith-VmSize>",
+        "managedServiceIdentity": "SystemAssigned",
+        "imageReference": {
+          // "id": ""
+          "publisher": "<ReplaceWith-Publisher>",
+          "offer": "<ReplaceWith-Offer>",
+          "sku": "<ReplaceWith-Sku>",
+          "version": "<ReplaceWith-Version>"
+        },
+        "osDisk": {
+          "createOption": "fromImage",
+          "diskSizeGB": "<ReplaceWith-DiskSizeGB>",
+          "managedDisk": {
+            "storageAccountType": "<ReplaceWith-StorageAccountType>"
+          }
+        },
+        "adminUsername": "<ReplaceWith-AdminUsername>",
+        "adminPassword": {
+          "keyVault": {
+            "id": "<ReplaceWith-Id>"
+          },
+          "secretName": "<ReplaceWith-SecretName>"
+        },
+        "windowsConfiguration": {
+          "timeZone": "<ReplaceWith-TimeZone>"
+        },
+        "nicConfigurations": [
+          {
+            "nicSuffix": "<ReplaceWith-NicSuffix>",
+            "ipConfigurations": [
+              {
+                "name": "<ReplaceWith-Name>",
+                "subnetId": "<ReplaceWith-SubnetId>"
+              }
+            ]
+          }
+        ],
+        "domainName": "<ReplaceWith-DomainName>",
+        "domainJoinUser": "<ReplaceWith-DomainJoinUser>",
+        "domainJoinPassword": {
+          "keyVault": {
+            "id": "<ReplaceWith-Id>"
+          },
+          "secretName": "<ReplaceWith-SecretName>"
+        },
+        "domainJoinOU": "<ReplaceWith-DomainJoinOU>",
+        "domainJoinRestart": true, // Required to pull GPOs
+        "windowsScriptExtensionFileData": [
+          {
+            "uri": "<ReplaceWith-Uri>",
+            "storageAccountId": "<ReplaceWith-StorageAccountId>"
+          },
+          {
+            "uri": "<ReplaceWith-Uri>",
+            "storageAccountId": "<ReplaceWith-StorageAccountId>"
+          }
+        ]
+      }
+    },
+    // Shared
+    "tags": {
+      "value": {
+        "Environment": "<ReplaceWith-Environment>",
+        "Contact": "<ReplaceWith-Contact>",
+        "PurchaseOrder": "<ReplaceWith-PurchaseOrder>",
+        "CostCenter": "<ReplaceWith-CostCenter>",
+        "ServiceName": "<ReplaceWith-ServiceName>",
+        "Role": "<ReplaceWith-Role>"
+      }
+    }
+  }
+}

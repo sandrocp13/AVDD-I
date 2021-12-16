@@ -1,0 +1,124 @@
+#######################################################################
+##                                NOTE                               ##
+## ------------------------------------------------------------------##
+## - These variables are used to configure the pipeline and provide  ##
+##   variables to pipeline scripts                                   ##
+## - Parameters used for resource deployments are located in the     ##
+##   parameter files in the '.\Parameters' folder                    ##
+#######################################################################
+
+variables:
+
+#############
+## GENERAL ##
+#############
+
+- name: rgFolderPath
+  value: '$(orchestrationPath)/WVD-Mgmt-PO-RG'
+
+- name: location
+  value: <ReplaceWith-Location>
+
+#######################
+## PIPELINE CONTROLS ##
+#######################
+#region pipeline controls
+
+# Pipeline Name
+# -------------
+- name: pipelineName
+  value: 'WVD Management deployment'
+
+# Deployed Module Specs
+# ---------------------
+- name: roleDefinitionModuleName
+  value: RoleDefinitions
+- name: roleDefinitionModuleVersion
+  value: <ReplaceWith-RoleDefinitionModuleVersion>
+
+- name: rbacModuleName
+  value: RoleAssignments
+- name: rbacModuleVersion
+  value: <ReplaceWith-RbacModuleVersion>
+
+- name: resourceGroupModuleName
+  value: ResourceGroup
+- name: resourceGroupModuleVersion
+  value: <ReplaceWith-ResourceGroupModuleVersion>
+
+- name: keyVaultModuleName
+  value: KeyVault
+- name: keyVaultModuleVersion
+  value: <ReplaceWith-KeyVaultModuleVersion>
+
+- name: automationAccountModuleName
+  value: AutomationAccounts
+- name: automationAccountModuleVersion
+  value: <ReplaceWith-AutomationAccountModuleVersion>
+
+- name: rsvModuleName
+  value: RecoveryServicesVaults
+- name: rsvModuleVersion
+  value: <ReplaceWith-RsvModuleVersion>
+
+- name: storageAccountModuleName
+  value: StorageAccounts
+- name: storageAccountModuleVersion
+  value: <ReplaceWith-StorageAccountModuleVersion>
+
+#endregion
+
+######################
+## SCRIPT VARIABLES ##
+######################
+#region script variables
+
+# ResourceGroup related
+# ---------------------
+- name: resourcegroupname
+  value: <ReplaceWith-Resourcegroupname>
+
+# Key Vault related
+# -----------------
+- name: keyVaultName
+  value: <ReplaceWith-KeyVaultName>
+
+  ## The DevOps variable groups hosting the secrets required for the deployments
+- group: <ReplaceWith-WVDSecretsGroup>
+
+- name: domainJoinUserName
+  value: <ReplaceWith-DomainJoinUserName>
+
+  ## Only required to enable Native AD identity-based access for file shares. Can be empty in case of Azure ADDS identity approach.
+- name: storageJoinUserName
+  value: <ReplaceWith-StorageJoinUserName> # '' if Azure ADDS
+
+# Auto Account related
+# --------------------
+- name: AutomationAccountName
+  value: <ReplaceWith-AutomationAccountName>
+
+- name: ScalingRunbookName
+  value: <ReplaceWith-ScalingRunbookName>
+
+- name: ScalingWebhookName
+  value: <ReplaceWith-ScalingWebhookName>
+
+- name: RunAsConnectionSPName
+  value: <ReplaceWith-RunAsConnectionSPName>
+
+- name: RunAsSelfSignedCertSecretName
+  value: <ReplaceWith-RunAsSelfSignedCertSecretName>
+
+- name: AutoAccountRunAsCertExpiryInMonths
+  value: <ReplaceWith-AutoAccountRunAsCertExpiryInMonths>
+
+  # Optional. If specified, Log Analytics will be used to configure the custom log table that the runbook PowerShell script can send logs to
+- name: LAWorkspaceName
+  value: <ReplaceWith-LAWorkspaceName>
+
+# Recovery Services Vault related
+# -------------------------------
+- name: profilesBackupVault
+  value: <ReplaceWith-ProfilesBackupVault>
+#endregion

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "netAppAccountName": {
+      "value": "<ReplaceWith-NetAppAccountName>"
+    },
+    "domainName": {
+      "value": "<ReplaceWith-DomainName>"
+    },
+    "domainJoinUser": {
+      "value": "<ReplaceWith-DomainJoinUser>"
+    },
+    "domainJoinPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "<ReplaceWith-Id>"
+        },
+        "secretName": "<ReplaceWith-SecretName>"
+      }
+    },
+    "dnsServers": {
+      "value": "<ReplaceWith-DnsServers>"
+    },
+    "smbServerNamePrefix": {
+      "value": "<ReplaceWith-SmbServerNamePrefix>"
+    },
+    "domainJoinOU": {
+      "value": "<ReplaceWith-DomainJoinOU>"
+    },
+    "capacityPools": {
+      "value": [
+        {
+          "poolName": "<ReplaceWith-PoolName>",
+          "poolServiceLevel": "<ReplaceWith-PoolServiceLevel>",
+          "poolSize": <ReplaceWith-PoolSize>,
+          "volumes": [
+            {
+              "poolVolumeName": "<ReplaceWith-PoolVolumeName>",
+              "creationToken": "<ReplaceWith-CreationToken>",
+              "poolVolumeQuota": <ReplaceWith-PoolVolumeQuota>,
+              "protocolTypes": [
+                "CIFS"
+              ],
+              "subnetId": "<ReplaceWith-SubnetId>",
+              "roleAssignments": []
+            }
+          ],
+          "roleAssignments": []
+        }
+      ]
+    }
+  }
+}

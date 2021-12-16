@@ -1,0 +1,87 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmNames": {
+      "value": [
+        "<ReplaceWith-VmNames>"
+      ]
+    },
+    "vmSize": {
+      "value": "<ReplaceWith-VmSize>"
+    },
+    "managedServiceIdentity": {
+      "value": "<ReplaceWith-ManagedServiceIdentity>"
+    },
+    "osDisk": {
+      "value": {
+        "createOption": "fromImage",
+        "diskSizeGB": "<ReplaceWith-DiskSizeGB>",
+        "managedDisk": {
+          "storageAccountType": "<ReplaceWith-StorageAccountType>"
+        }
+      }
+    },
+    "adminUsername": {
+      "value": "<ReplaceWith-AdminUsername>"
+    },
+    "adminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "<ReplaceWith-Id>"
+        },
+        "secretName": "<ReplaceWith-SecretName>"
+      }
+    },
+    "nicConfigurations": {
+      "value": [
+        {
+          "nicSuffix": "<ReplaceWith-NicSuffix>",
+          "ipConfigurations": [
+            {
+              "name": "<ReplaceWith-Name>",
+              "subnetId": "<ReplaceWith-SubnetId>"
+            }
+          ]
+        }
+      ]
+    },
+    "domainName": {
+      "value": "<ReplaceWith-DomainName>"
+    },
+    "domainJoinUser": {
+      "value": "<ReplaceWith-DomainJoinUser>"
+    },
+    "domainJoinPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "<ReplaceWith-Id>"
+        },
+        "secretName": "<ReplaceWith-SecretName>"
+      }
+    },
+    "domainJoinOU": {
+      "value": "<ReplaceWith-DomainJoinOU>"
+    },
+    "domainJoinRestart": {
+      "value": true
+    },
+    "windowsConfiguration": {
+      "value": {
+        "timeZone": "<ReplaceWith-TimeZone>"
+      }
+    },
+    "windowsScriptExtensionFileData": {
+      "value": [
+        {
+          "uri": "<ReplaceWith-Uri>",
+          "storageAccountId": "<ReplaceWith-StorageAccountId>"
+        },
+        {
+          "uri": "<ReplaceWith-Uri>",
+          "storageAccountId": "<ReplaceWith-StorageAccountId>"
+        }
+      ]
+    }
+  }
+}

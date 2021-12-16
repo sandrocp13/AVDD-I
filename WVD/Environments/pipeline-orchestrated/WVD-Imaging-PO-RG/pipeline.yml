@@ -1,0 +1,123 @@
+name: $(pipelineName)
+
+parameters:
+- name: enableJobUpdateAssetsStorageAccount
+  displayName: Update Assets Storage Account
+  type: boolean
+  default: true
+- name: enableJobDeployResourceGroup
+  displayName: Deploy Resource Group
+  type: boolean
+  default: false
+- name: enableJobDeployUserAssignedIdentities
+  displayName: Deploy Managed Identity
+  type: boolean
+  default: false
+- name: enableJobRoleAssignmentsImagingSubscriptionContributor
+  displayName: Assign MSI Role Assignment
+  type: boolean
+  default: false
+- name: enableJobDeploySharedImageGallery
+  displayName: Deploy Shared Image Gallery
+  type: boolean
+  default: false
+- name: enableJobDeploySharedImageDefinition
+  displayName: Deploy Shared Image Definition
+  type: boolean
+  default: false
+- name: removeImageTemplateResourceGroups
+  displayName: Pre-Remove Image Template Resource Groups
+  type: boolean
+  default: true
+- name: enableJobDeployImageTemplates
+  displayName: Deploy Image Template
+  type: boolean
+  default: true
+- name: targetEnvironment
+  displayName: Environment(s) to deploy to
+  type: string
+  default: SBX
+  values:
+  - SBX
+  - TEST
+  - PRD
+  - All
+
+variables:
+- template: ..\.global\variables.yml
+- template: variables.yml
+
+trigger: none
+
+stages:
+- stage: SBX
+  condition: |
+    and(
+      succeeded(),
+      in('${{ parameters.targetEnvironment }}', 'All', 'SBX')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(SBX)'
+      vmImage: '$(vmImage-SBX)'
+      poolName: '$(poolName-SBX)'
+      serviceConnection: '$(serviceConnection-SBX)'
+      enableJobUpdateAssetsStorageAccount: '${{ parameters.enableJobUpdateAssetsStorageAccount}}'
+      enableJobDeployResourceGroup: '${{ parameters.enableJobDeployResourceGroup}}'
+      enableJobDeployUserAssignedIdentities: '${{ parameters.enableJobDeployUserAssignedIdentities}}'
+      enableJobRoleAssignmentsImagingSubscriptionContributor: '${{ parameters.enableJobRoleAssignmentsImagingSubscriptionContributor}}'
+      enableJobDeploySharedImageGallery: '${{ parameters.enableJobDeploySharedImageGallery}}'
+      enableJobDeploySharedImageDefinition: '${{ parameters.enableJobDeploySharedImageDefinition}}'
+      removeImageTemplateResourceGroups: '${{ parameters.removeImageTemplateResourceGroups}}'
+      enableJobDeployImageTemplates: '${{ parameters.enableJobDeployImageTemplates}}'
+
+- stage: TEST
+  condition: |
+    and(
+      or(
+        succeeded(),
+        in('${{ parameters.targetEnvironment }}', 'TEST')
+      ),
+      in('${{ parameters.targetEnvironment }}', 'All', 'TEST')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(TEST)'
+      vmImage: '$(vmImage-TEST)'
+      poolName: '$(poolName-TEST)'
+      serviceConnection: '$(serviceConnection-TEST)'
+      enableJobUpdateAssetsStorageAccount: '${{ parameters.enableJobUpdateAssetsStorageAccount}}'
+      enableJobDeployResourceGroup: '${{ parameters.enableJobDeployResourceGroup}}'
+      enableJobDeployUserAssignedIdentities: '${{ parameters.enableJobDeployUserAssignedIdentities}}'
+      enableJobRoleAssignmentsImagingSubscriptionContributor: '${{ parameters.enableJobRoleAssignmentsImagingSubscriptionContributor}}'
+      enableJobDeploySharedImageGallery: '${{ parameters.enableJobDeploySharedImageGallery}}'
+      enableJobDeploySharedImageDefinition: '${{ parameters.enableJobDeploySharedImageDefinition}}'
+      removeImageTemplateResourceGroups: '${{ parameters.removeImageTemplateResourceGroups}}'
+      enableJobDeployImageTemplates: '${{ parameters.enableJobDeployImageTemplates}}'
+
+- stage: PRD
+  condition: |
+    and(
+      or(
+        succeeded(),
+        in('${{ parameters.targetEnvironment }}', 'PRD')
+      ),
+      in('${{ parameters.targetEnvironment }}', 'All', 'PRD')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(PRD)'
+      vmImage: '$(vmImage-PRD)'
+      poolName: '$(poolName-PRD)'
+      serviceConnection: '$(serviceConnection-PRD)'
+      enableJobUpdateAssetsStorageAccount: '${{ parameters.enableJobUpdateAssetsStorageAccount}}'
+      enableJobDeployResourceGroup: '${{ parameters.enableJobDeployResourceGroup}}'
+      enableJobDeployUserAssignedIdentities: '${{ parameters.enableJobDeployUserAssignedIdentities}}'
+      enableJobRoleAssignmentsImagingSubscriptionContributor: '${{ parameters.enableJobRoleAssignmentsImagingSubscriptionContributor}}'
+      enableJobDeploySharedImageGallery: '${{ parameters.enableJobDeploySharedImageGallery}}'
+      enableJobDeploySharedImageDefinition: '${{ parameters.enableJobDeploySharedImageDefinition}}'
+      removeImageTemplateResourceGroups: '${{ parameters.removeImageTemplateResourceGroups}}'
+      enableJobDeployImageTemplates: '${{ parameters.enableJobDeployImageTemplates}}'

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Resource Group
+    "rgParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "ResourceGroup",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "resourceGroupName": "<ReplaceWith-ResourceGroupName>"
+      }
+    },
+    // ANF
+    "anfParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "AzureNetAppFiles",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "netAppAccountName": "<ReplaceWith-NetAppAccountName>",
+        "domainName": "<ReplaceWith-DomainName>",
+        "domainJoinUser": "<ReplaceWith-DomainJoinUser>",
+        "domainJoinPassword": {
+          "keyVault": {
+            "id": "<ReplaceWith-Id>"
+          },
+          "secretName": "<ReplaceWith-SecretName>"
+        },
+        "dnsServers": "<ReplaceWith-DnsServers>",
+        "smbServerNamePrefix": "<ReplaceWith-SmbServerNamePrefix>",
+        "domainJoinOU": "<ReplaceWith-DomainJoinOU>",
+        "capacityPools": [
+          {
+            "poolName": "<ReplaceWith-PoolName>",
+            "poolServiceLevel": "<ReplaceWith-PoolServiceLevel>",
+            "poolSize": <ReplaceWith-PoolSize>,
+            "volumes": [
+              {
+                "poolVolumeName": "<ReplaceWith-PoolVolumeName>",
+                "creationToken": "<ReplaceWith-CreationToken>",
+                "poolVolumeQuota": <ReplaceWith-PoolVolumeQuota>,
+                "protocolTypes": [
+                  "CIFS"
+                ],
+                "subnetId": "<ReplaceWith-SubnetId>",
+                "roleAssignments": []
+              }
+            ],
+            "roleAssignments": []
+          }
+        ],
+        "roleAssignments": []
+      }
+    },
+    // Shared
+    "tags": {
+      "value": {
+        "Environment": "<ReplaceWith-Environment>",
+        "Contact": "<ReplaceWith-Contact>",
+        "PurchaseOrder": "<ReplaceWith-PurchaseOrder>",
+        "CostCenter": "<ReplaceWith-CostCenter>",
+        "ServiceName": "<ReplaceWith-ServiceName>",
+        "Role": "<ReplaceWith-Role>"
+      }
+    }
+  }
+}

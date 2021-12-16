@@ -1,0 +1,123 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    // Resource Group
+    "rgParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "ResourceGroup",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "resourceGroupName": "<ReplaceWith-ResourceGroupName>"
+      }
+    },
+    // User Assigned Identity (MSI)
+    "msiParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "UserAssignedIdentities",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "userMsiName": "<ReplaceWith-UserMsiName>"
+      }
+    },
+    // Role Assignment (Subscription contributor)
+    "roleParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "RoleAssignments",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>"
+      }
+    },
+    // Shared Image Gallery
+    "sigParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "SharedImageGallery",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "galleryName": "<ReplaceWith-GalleryName>",
+        "galleryDescription": "<ReplaceWith-GalleryDescription>"
+      }
+    },
+    // Shared Image Definition
+    "sidParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "SharedImageDefinition",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "sidParametersArray": [
+          {
+            "imageDefinitionName": "<ReplaceWith-ImageDefinitionName>",
+            "osType": "Windows",
+            "osState": "Generalized",
+            "publisher": "<ReplaceWith-Publisher>",
+            "offer": "<ReplaceWith-Offer>",
+            "sku": "<ReplaceWith-Sku>",
+            "minRecommendedvCPUs": <ReplaceWith-MinRecommendedvCPUs>, //e.g 2
+            "maxRecommendedvCPUs": <ReplaceWith-MaxRecommendedvCPUs>, //e.g 8
+            "minRecommendedMemory": <ReplaceWith-MinRecommendedMemory>, //e.g 4
+            "maxRecommendedMemory": <ReplaceWith-MaxRecommendedMemory>, //e.g 16
+            "hyperVGeneration": "<ReplaceWith-HyperVGeneration>", //e.g. "V1"
+            "imageDefinitionDescription": "<ReplaceWith-ImageDefinitionDescription>"
+          }
+        ]
+      }
+    },
+    // Image template
+    "imgParameters": {
+      "value": {
+        "enabled": true,
+        "moduleName": "ImageTemplates",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>",
+        "imgParametersArray": [
+          {
+            "imageTemplateName": "<ReplaceWith-ImageTemplateName>",
+            "buildTimeoutInMinutes": <ReplaceWith-BuildTimeoutInMinutes>, //e.g. 0
+            "vmSize": "<ReplaceWith-VmSize>",
+            "osDiskSizeGB": <ReplaceWith-OsDiskSizeGB>,
+            "subnetId": "",
+            "imageSource": {
+              "type": "<ReplaceWith-Type>",
+              "publisher": "<ReplaceWith-Publisher>",
+              "offer": "<ReplaceWith-Offer>",
+              "sku": "<ReplaceWith-Sku>",
+              "version": "<ReplaceWith-Version>"
+            },
+            "customizationSteps": [
+              {
+                "type": "<ReplaceWith-Type>",
+                "name": "<ReplaceWith-Name>",
+                "sourceUri": "<ReplaceWith-SourceUri>",
+                "destination": "<ReplaceWith-Destination>"
+              }
+            ],
+            "managedImageName": "",
+            "unManagedImageName": "",
+            "imageReplicationRegions": [
+              "<ReplaceWith-ImageReplicationRegions>"
+            ]
+          }
+        ]
+      }
+    },
+    // Deployment Script
+    "deploymentScriptParameters": {
+      "value": {
+        "enableTriggerNewImage": true, // Trigger building new image
+        "enableSyncWaitNewImage": false, // Optional: synchronously wait for building new image
+        "moduleName": "DeploymentScripts",
+        "moduleVersion": "<ReplaceWith-ModuleVersion>"
+      }
+    },
+    // Shared
+    "tags": {
+      "value": {
+        "Environment": "<ReplaceWith-Environment>",
+        "Contact": "<ReplaceWith-Contact>",
+        "PurchaseOrder": "<ReplaceWith-PurchaseOrder>",
+        "CostCenter": "<ReplaceWith-CostCenter>",
+        "ServiceName": "<ReplaceWith-ServiceName>",
+        "Role": "<ReplaceWith-Role>"
+      }
+    }
+  }
+}

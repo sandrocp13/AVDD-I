@@ -1,0 +1,88 @@
+name: $(pipelineName)
+
+parameters:
+- name: enableJobUpdateAssetsStorageAccount
+  displayName: Update Assets Storage Account
+  type: boolean
+  default: true
+- name: removeImageTemplateResourceGroups
+  displayName: Pre-Remove Image Template Resource Groups
+  type: boolean
+  default: true
+- name: enableDeploymentMasterARMTemplate
+  displayName: Deploy Resources
+  type: boolean
+  default: true
+- name: targetEnvironment
+  displayName: Environment(s) to deploy to
+  type: string
+  default: SBX
+  values:
+  - SBX
+  - TEST
+  - PRD
+  - All
+
+variables:
+- template: ..\.global\variables.yml
+- template: variables.yml
+
+trigger: none
+
+stages:
+- stage: SBX
+  condition: |
+    and(
+      succeeded(),
+      in('${{ parameters.targetEnvironment }}', 'All', 'SBX')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(SBX)'
+      vmImage: '$(vmImage-SBX)'
+      poolName: '$(poolName-SBX)'
+      serviceConnection: '$(serviceConnection-SBX)'
+      enableJobUpdateAssetsStorageAccount: '${{ parameters.enableJobUpdateAssetsStorageAccount }}'
+      removeImageTemplateResourceGroups: '${{ parameters.removeImageTemplateResourceGroups }}'
+      enableDeploymentMasterARMTemplate: '${{ parameters.enableDeploymentMasterARMTemplate }}'
+
+- stage: TEST
+  condition: |
+    and(
+      or(
+        succeeded(),
+        in('${{ parameters.targetEnvironment }}', 'TEST')
+      ),
+      in('${{ parameters.targetEnvironment }}', 'All', 'TEST')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(TEST)'
+      vmImage: '$(vmImage-TEST)'
+      poolName: '$(poolName-TEST)'
+      serviceConnection: '$(serviceConnection-TEST)'
+      enableJobUpdateAssetsStorageAccount: '${{ parameters.enableJobUpdateAssetsStorageAccount }}'
+      removeImageTemplateResourceGroups: '${{ parameters.removeImageTemplateResourceGroups }}'
+      enableDeploymentMasterARMTemplate: '${{ parameters.enableDeploymentMasterARMTemplate }}'
+
+- stage: PRD
+  condition: |
+    and(
+      or(
+        succeeded(),
+        in('${{ parameters.targetEnvironment }}', 'PRD')
+      ),
+      in('${{ parameters.targetEnvironment }}', 'All', 'PRD')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(PRD)'
+      vmImage: '$(vmImage-PRD)'
+      poolName: '$(poolName-PRD)'
+      serviceConnection: '$(serviceConnection-PRD)'
+      enableJobUpdateAssetsStorageAccount: '${{ parameters.enableJobUpdateAssetsStorageAccount }}'
+      removeImageTemplateResourceGroups: '${{ parameters.removeImageTemplateResourceGroups }}'
+      enableDeploymentMasterARMTemplate: '${{ parameters.enableDeploymentMasterARMTemplate }}'

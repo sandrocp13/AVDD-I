@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "value": "<ReplaceWith-StorageAccountName>"
+    },
+    "storageAccountKind": {
+      "value": "<ReplaceWith-StorageAccountKind>"
+    },
+    "storageAccountSku": {
+      "value": "<ReplaceWith-StorageAccountSku>"
+    },
+    "storageAccountAccessTier": {
+      "value": "<ReplaceWith-StorageAccountAccessTier>"
+    },
+    "blobContainers": {
+      "value": [
+        {
+          "name": "imagescripts",
+          "publicAccess": "None",
+          "roleAssignments": []
+        },
+        {
+          "name": "storagejoin",
+          "publicAccess": "None",
+          "roleAssignments": []
+        },
+        {
+          "name": "<ReplaceWith-HostPoolName>",
+          "publicAccess": "None",
+          "roleAssignments": []
+        }
+      ]
+    },
+    "tables": {
+      "value": [
+        "<ReplaceWith-ShortenedHostPoolName>"
+      ]
+    }
+  }
+}

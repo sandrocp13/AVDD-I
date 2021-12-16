@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "value": "<ReplaceWith-StorageAccountName>"
+    },
+    "storageAccountKind": {
+      "value": "<ReplaceWith-StorageAccountKind>"
+    },
+    "storageAccountSku": {
+      "value": "<ReplaceWith-StorageAccountSku>"
+    },
+    "storageAccountAccessTier": {
+      "value": "<ReplaceWith-StorageAccountAccessTier>"
+    },
+    "fileShares": {
+      "value": [
+        {
+          "name": "<ReplaceWith-Name>",
+          "shareQuota": "<ReplaceWith-ShareQuota>",
+          "roleAssignments": [
+            {
+              "roleDefinitionIdOrName": "Storage File Data SMB Share Contributor",
+              "principalIds": [
+                "<ReplaceWith-PrincipalIDs>"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    // Native AD only
+    "roleAssignments": {
+      "value": [
+        {
+          "roleDefinitionIdOrName": "Storage Account Contributor",
+          "principalIds": [
+            "<ReplaceWith-PrincipalIDs>"
+          ]
+        }
+      ]
+    }
+  }
+}

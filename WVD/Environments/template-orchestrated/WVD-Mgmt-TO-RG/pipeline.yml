@@ -1,0 +1,88 @@
+name: $(pipelineName)
+
+parameters:
+- name: enableDeploymentMasterARMTemplate
+  displayName: Deploy Resources
+  type: boolean
+  default: true
+- name: enablePostDeploymentWVDKeyVault
+  displayName: Run Key Vault Post Deployment
+  type: boolean
+  default: true
+- name: enablePostDeploymentAutomationAccount
+  displayName: Run Automation Account Post Deployment
+  type: boolean
+  default: true
+- name: targetEnvironment
+  displayName: Environment(s) to deploy to
+  type: string
+  default: SBX
+  values:
+  - SBX
+  - TEST
+  - PRD
+  - All
+
+variables:
+- template: ..\.global\variables.yml
+- template: variables.yml
+
+trigger: none
+
+stages:
+- stage: SBX
+  condition: |
+    and(
+      succeeded(),
+      in('${{ parameters.targetEnvironment }}', 'All', 'SBX')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(SBX)'
+      vmImage: '$(vmImage-SBX)'
+      poolName: '$(poolName-SBX)'
+      serviceConnection: '$(serviceConnection-SBX)'
+      enableDeploymentMasterARMTemplate: '${{ parameters.enableDeploymentMasterARMTemplate }}'
+      enablePostDeploymentWVDKeyVault: '${{ parameters.enablePostDeploymentWVDKeyVault }}'
+      enablePostDeploymentAutomationAccount: '${{ parameters.enablePostDeploymentAutomationAccount }}'
+
+- stage: TEST
+  condition: |
+    and(
+      or(
+        succeeded(),
+        in('${{ parameters.targetEnvironment }}', 'TEST')
+      ),
+      in('${{ parameters.targetEnvironment }}', 'All', 'TEST')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(TEST)'
+      vmImage: '$(vmImage-TEST)'
+      poolName: '$(poolName-TEST)'
+      serviceConnection: '$(serviceConnection-TEST)'
+      enableDeploymentMasterARMTemplate: '${{ parameters.enableDeploymentMasterARMTemplate }}'
+      enablePostDeploymentWVDKeyVault: '${{ parameters.enablePostDeploymentWVDKeyVault }}'
+      enablePostDeploymentAutomationAccount: '${{ parameters.enablePostDeploymentAutomationAccount }}'
+
+- stage: PRD
+  condition: |
+    and(
+      or(
+        succeeded(),
+        in('${{ parameters.targetEnvironment }}', 'PRD')
+      ),
+      in('${{ parameters.targetEnvironment }}', 'All', 'PRD')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(PRD)'
+      vmImage: '$(vmImage-PRD)'
+      poolName: '$(poolName-PRD)'
+      serviceConnection: '$(serviceConnection-PRD)'
+      enableDeploymentMasterARMTemplate: '${{ parameters.enableDeploymentMasterARMTemplate }}'
+      enablePostDeploymentWVDKeyVault: '${{ parameters.enablePostDeploymentWVDKeyVault }}'
+      enablePostDeploymentAutomationAccount: '${{ parameters.enablePostDeploymentAutomationAccount }}'

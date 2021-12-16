@@ -1,0 +1,90 @@
+#######################################################################
+##                                NOTE                               ##
+## ------------------------------------------------------------------##
+## - These variables are used to configure the pipeline and provide  ##
+##   variables to pipeline scripts                                   ##
+## - Parameters used for resource deployments are located in the     ##
+##   parameter files in the '.\Parameters' folder                    ##
+#######################################################################
+
+variables:
+
+  #############
+  ## GENERAL ##
+  #############
+
+  rgFolderPath: '$(orchestrationPath)/WVD-AzFilesProfiles-PO-RG'
+  storageContainerMapPath: 'Parameters/Uploads/assets.config.json'
+  location: <ReplaceWith-Location>
+
+  #######################
+  ## PIPELINE CONTROLS ##
+  #######################
+  #region pipeline controls
+
+  # Pipeline Name
+  # -------------
+  pipelineName: 'WVD Profile StorageAccount deployment'
+
+  # Deployed Module Specs
+  # ---------------------
+  resourceGroupModuleName: ResourceGroup
+  resourceGroupModuleVersion: <ReplaceWith-ResourceGroupModuleVersion>
+
+  storageAccountModuleName: StorageAccounts
+  storageAccountModuleVersion: <ReplaceWith-StorageAccountModuleVersion>
+
+  virtualMachinesModuleName: VirtualMachines
+  virtualMachinesModuleVersion: <ReplaceWith-VirtualMachinesModuleVersion>
+  #endregion
+
+  ######################
+  ## SCRIPT VARIABLES ##
+  ######################
+  #region script variables
+
+  # ResourceGroup related
+  # ---------------------
+  resourcegroupname: <ReplaceWith-Resourcegroupname>
+
+
+  # Recovery Services Vault related
+  # -------------------------------
+  profilesBackupVault: <ReplaceWith-ProfilesBackupVault>
+  profilesBackupVaultRG: <ReplaceWith-ProfilesBackupVaultRG>
+
+  # Identity-based access for file shares (AD or AADDS)
+  # ------------------------------------------------
+  # Controls the way the authentication towards the FSLogix file shares is set up
+
+  ## Azure ADDS
+  # If Azure ADDS is the provided identity solution, only the storage account is created as part of the pipeline.
+  # The identity-based access for file shares is enabled for Azure ADDS as part of the storage resource deployment.
+  # keyVaultName and helperServerName variables should be set to '' (empty)
+  # identityApproach: AADDS
+  # keyVaultName: ''
+  # helperServerName: ''
+
+  ## Native AD
+  # If Native AD (ADDS) is the provided identity solution, additional jobs are triggered as part of the pipeline.
+  # The identity-based access for file shares is enabled for Native AD leveraging a domain joined VM, created as part of the pipeline.
+  # keyVaultName is the key vault storing the hybrid admin credentials used to join the storage account.
+  # helperServerName is the name of the domain joined VM which will be created to run the storage account join on behalf of the hybrid admin.
+  identityApproach: AD
+  keyVaultName: <ReplaceWith-KeyVaultName>
+  helperServerName: <ReplaceWith-HelperServerName>
+  # Imaging
+  # -------
+  ## Custom Image
+  # If a custom image reference is provided, it is picked up instead of any provided marketplace image information. If not used, should be set to '' (empty)
+  # Is used for the session host deployment as well as the host-pool image update process (if enabled)
+  customImageReferenceId: ''
+
+  ## Marketplace Image
+  # Is used for the session host deployment as well as the host-pool image update process (if enabled)
+  publisher: <ReplaceWith-Publisher>
+  offer: <ReplaceWith-Offer>
+  sku: <ReplaceWith-Sku>
+  version: <ReplaceWith-Version>
+  imagelocation: <ReplaceWith-Imagelocation> # Required if not using the 'customImageReferenceId' and 'version' equals 'latest'
+  #endregion

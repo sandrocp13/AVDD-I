@@ -1,0 +1,143 @@
+parameters:
+  serviceConnection:
+  waitForDeployments: false
+  purgeFailedResources: false
+  purgeRgDeployments: false
+  jsonParameterToEnable:
+  restartVMsAfterExtensionsDeployment: false
+  stepNameSuffix:
+  continueOnError: false
+
+steps:
+- checkout: self
+
+# Wait for active deployments
+- ${{ if eq(parameters.waitForDeployments, true) }}:
+  - task: AzurePowerShell@4
+    displayName: "Wait for possible active deployments"
+    inputs:
+      azureSubscription: '${{ parameters.serviceConnection }}'
+      ScriptType: pscore
+      scriptLocation: inlineScript
+      azurePowerShellVersion: LatestVersion
+      errorActionPreference: stop
+      inline: |
+        Write-Verbose "Load function" -Verbose
+        . '$(Build.SourcesDirectory)/$(orchestrationFunctionsPath)/SessionHosts/Wait-RunningRgDeployment.ps1'
+
+        $functionInput = @{
+          resourceGroupName = '$(resourceGroupName)'
+        }
+
+        Write-Verbose "Invoke task with $functionInput" -Verbose
+        $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+        Wait-RunningRgDeployment @functionInput -Verbose
+
+# Purge failed resources
+- ${{ if eq(parameters.purgeFailedResources, true) }}:
+  - task: AzurePowerShell@4
+    displayName: "Clean up failed resources"
+    continueOnError: ${{ parameters.continueOnError }}
+    inputs:
+      azureSubscription: '${{ parameters.serviceConnection }}'
+      ScriptType: pscore
+      scriptLocation: inlineScript
+      azurePowerShellVersion: LatestVersion
+      errorActionPreference: stop
+      inline: |
+        Write-Verbose "Load function" -Verbose
+        . '$(Build.SourcesDirectory)/$(orchestrationFunctionsPath)/SessionHosts/Remove-FailedResource.ps1'
+
+        $functionInput = @{
+          orchestrationFunctionsPath = Join-Path '$(Build.Repository.LocalPath)' '$(orchestrationFunctionsPath)'
+          resourceGroupName          = '$(resourceGroupName)'
+          UtcOffset                  = '$(UtcOffset)'
+        }
+
+        Write-Verbose "Invoke task with $functionInput" -Verbose
+        $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+        Remove-FailedResource @functionInput -Verbose
+
+# Cleanup RG deployments
+- ${{ if eq(parameters.purgeRgDeployments, true) }}:
+  - task: AzurePowerShell@4
+    displayName: "Clean up Resource Group deployment"
+    continueOnError: ${{ parameters.continueOnError }}
+    inputs:
+      azureSubscription: '${{ parameters.serviceConnection }}'
+      ScriptType: pscore
+      scriptLocation: inlineScript
+      azurePowerShellVersion: LatestVersion
+      errorActionPreference: stop
+      inline: |
+        Write-Verbose "Load function" -Verbose
+        . '$(Build.SourcesDirectory)/$(orchestrationFunctionsPath)/SessionHosts/Remove-RgDeployment.ps1'
+
+        $functionInput = @{
+          resourceGroupName          = '$(resourceGroupName)'
+          throttleLimit              = 100
+        }
+
+        Write-Verbose "Invoke task with $functionInput" -Verbose
+        $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+        Remove-RgDeployment @functionInput -Verbose
+
+# Validate
+- task: AzureCLI@2
+  displayName: "Validate ${{ parameters.stepNameSuffix }}"
+  continueOnError: ${{ parameters.continueOnError }}
+  inputs:
+    azureSubscription: '${{ parameters.serviceConnection }}'
+    ScriptType: pscore
+    scriptLocation: inlineScript
+    powerShellErrorActionPreference: stop
+    inlineScript: |
+      $templateFilePath = "$(Build.Repository.LocalPath)/$(rgFolderPath)/deploy.json"
+      $parameterFilePath = "$(Build.Repository.LocalPath)/$(rgFolderPath)/Parameters/parameters.json"
+      $parameterUpdatedFilePath = "$(Build.Repository.LocalPath)/$(rgFolderPath)/Parameters/parameters.updated.json"
+      $paramsRaw = Get-Content $parameterFilePath -Raw
+      $paramsSanitized = $paramsRaw -replace '(?m)(?<=^([^"]|"[^"]*")*)//.*' -replace '(?ms)/\*.*?\*/'
+      $json = ConvertFrom-Json $paramsSanitized -AsHashTable
+      $json.parameters.${{ parameters.jsonParameterToEnable }}.value = $true
+      $performRestart = "${{ parameters.restartVMsAfterExtensionsDeployment }}"
+      if($performRestart -eq 'True') {
+        $json.parameters.vmParameters.value.windowsScriptExtensionFileData += $json.parameters.vmParameters.value.windowsScriptRestartExtensionFileData
+      }
+      ConvertTo-Json $json -depth 10 | Out-File $parameterUpdatedFilePath
+
+
+      Write-Verbose 'Handling subscription level deployment' -Verbose
+      $ValidationErrors = $null
+      az deployment sub validate --location "$(location)" --template-file $templateFilePath --parameters @$parameterUpdatedFilePath
+
+      if ($ValidationErrors) {
+        Write-Error "Template is not valid."
+      }
+
+# Deploy
+- task: AzureCLI@2
+  displayName: "Deploy ${{ parameters.stepNameSuffix }}"
+  continueOnError: ${{ parameters.continueOnError }}
+  inputs:
+    azureSubscription: '${{ parameters.serviceConnection }}'
+    ScriptType: pscore
+    scriptLocation: inlineScript
+    powerShellErrorActionPreference: stop
+    inlineScript: |
+      $templateFilePath = "$(Build.Repository.LocalPath)/$(rgFolderPath)/deploy.json"
+      $parameterFilePath = "$(Build.Repository.LocalPath)/$(rgFolderPath)/Parameters/parameters.json"
+      $parameterUpdatedFilePath = "$(Build.Repository.LocalPath)/$(rgFolderPath)/Parameters/parameters.updated.json"
+      $paramsRaw = Get-Content $parameterFilePath -Raw
+      $paramsSanitized = $paramsRaw -replace '(?m)(?<=^([^"]|"[^"]*")*)//.*' -replace '(?ms)/\*.*?\*/'
+      $json = ConvertFrom-Json $paramsSanitized -AsHashTable
+      $json.parameters.${{ parameters.jsonParameterToEnable }}.value = $true
+      $performRestart = "${{ parameters.restartVMsAfterExtensionsDeployment }}"
+      if($performRestart -eq 'True') {
+        $json.parameters.vmParameters.value.windowsScriptExtensionFileData += $json.parameters.vmParameters.value.windowsScriptRestartExtensionFileData
+      }
+      ConvertTo-Json $json -depth 10 | Out-File $parameterUpdatedFilePath
+
+      az deployment sub create --location "$(location)" --name "$(resourcegroupname)-$(Get-Date -Format yyyyMMddHHMMss)" --template-file $templateFilePath --parameters @$parameterUpdatedFilePath

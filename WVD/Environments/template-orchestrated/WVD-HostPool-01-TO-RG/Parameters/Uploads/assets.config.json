@@ -1,0 +1,47 @@
+{
+    "storageContainerMaps": [
+        {
+            "storageAccount": "<ReplaceWith-StorageAccount>"
+            // EXAMPLE
+            // "containerMaps": [
+            //     {
+            //         "packagesToUpload": [
+            //             {
+            //                 "packageName": "001-FSLogix",
+            //                 "additionalPackageFiles": [
+            //                     "fslogix.parameters.json"
+            //                 ],
+            //                 "downloads": [
+            //                     {
+            //                         "Url": "https://aka.ms/fslogix_download",
+            //                         "DestinationFilePath": "FSLogixApp.zip"
+            //                     }
+            //                 ]
+            //             },
+            //             {
+            //                 "packageName": "004-Teams",
+            //                 "additionalPackageFiles": [
+            //                     "teams.parameters.json"
+            //                 ],
+            //                 "downloads": [
+            //                     {
+            //                         "Url": "https://aka.ms/vs/16/release/vc_redist.x64.exe",
+            //                         "DestinationFilePath": "VC_redist.x64.exe"
+            //                     },
+            //                     {
+            //                         "Url": "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4AQBt",
+            //                         "DestinationFilePath": "WebSocket.msi"
+            //                     },
+            //                     {
+            //                         "Url": "https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true",
+            //                         "DestinationFilePath": "Teams_windows_x64.msi"
+            //                     }
+            //                 ]
+            //             },
+            //             "099-Restart"
+            //         ]
+            //     }
+            // ]
+        }
+    ]
+}

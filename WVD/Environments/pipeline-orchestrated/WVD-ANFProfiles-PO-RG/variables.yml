@@ -1,0 +1,45 @@
+#######################################################################
+##                                NOTE                               ##
+## ------------------------------------------------------------------##
+## - These variables are used to configure the pipeline and provide  ##
+##   variables to pipeline scripts                                   ##
+## - Parameters used for resource deployments are located in the     ##
+##   parameter files in the '.\Parameters' folder                    ##
+#######################################################################
+
+variables:
+
+#############
+## GENERAL ##
+#############
+
+  rgFolderPath: '$(orchestrationPath)/WVD-ANFProfiles-PO-RG'
+  location: <ReplaceWith-Location>
+
+#######################
+## PIPELINE CONTROLS ##
+#######################
+#region pipeline controls
+
+# Pipeline Name
+# -------------
+  pipelineName: 'WVD Profile ANF deployment'
+
+# Deployed Module Specs
+# ---------------------
+  resourceGroupModuleName: ResourceGroup
+  resourceGroupModuleVersion: <ReplaceWith-ResourceGroupModuleVersion>
+
+  anfModuleName: AzureNetappFiles
+  anfModuleVersion: <ReplaceWith-AnfModuleVersion>
+
+######################
+## SCRIPT VARIABLES ##
+######################
+#region script variables
+
+# ResourceGroup related
+# ---------------------
+  resourcegroupname: <ReplaceWith-Resourcegroupname>
+
+#endregion

@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workSpaceName": {
+            "value": "<ReplaceWith-WvdWorkSpaceName>"
+        },
+        "appGroupResourceIds": {
+            "value": [
+                "<ReplaceWith-AppGroupResourceIds>"
+            ]
+        },
+        "workspaceFriendlyName": {
+            "value": ""
+        },
+        "workspaceDescription": {
+            "value": ""
+        },
+        "workspaceId": {
+            "value": "<ReplaceWith-WorkspaceId>"
+        }
+    }
+}

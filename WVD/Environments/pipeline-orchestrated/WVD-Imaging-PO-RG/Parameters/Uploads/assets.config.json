@@ -1,0 +1,27 @@
+{
+    "storageContainerMaps": [
+        {
+            "storageAccount": "<ReplaceWith-StorageAccount>"
+            // EXAMPLE
+            // "containerMaps": [
+            //     {
+            //         "targetContainer": "imagescripts",
+            //         "packagesToUpload": [
+            //             {
+            //                 "packageName": "001-FSLogix",
+            //                 "additionalPackageFiles": [
+            //                     "fslogix.parameters.json"
+            //                 ]
+            //             },
+            //             {
+            //                 "packageName": "004-Teams",
+            //                 "additionalPackageFiles": [
+            //                     "teams.parameters.json"
+            //                 ]
+            //             }
+            //         ]
+            //     }
+            // ]
+        }
+    ]
+}

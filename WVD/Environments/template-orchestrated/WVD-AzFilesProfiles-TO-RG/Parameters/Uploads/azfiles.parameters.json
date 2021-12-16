@@ -1,0 +1,16 @@
+{
+	"azfiles": [
+		{
+			"StorageJoinUser": "<ReplaceWith-StorageJoinUser>",
+			"KeyVaultName": "<ReplaceWith-KeyVaultName>",
+			"SubscriptionId": "<ReplaceWith-SubscriptionId>",
+			"StorageResourceGroupName": "<ReplaceWith-StorageResourceGroupName>",
+			"StorageAccounts": [
+				"<ReplaceWith-StorageAccounts>"
+			],
+			"OUName": "<ReplaceWith-OUName>",
+			"DomainAccountType": "<ReplaceWith-DomainAccountType>",
+			"OverwriteExistingADObject": <ReplaceWith-OverwriteExistingADObject>
+		}
+	]
+}

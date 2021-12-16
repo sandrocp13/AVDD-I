@@ -1,0 +1,62 @@
+#######################################################################
+##                                NOTE                               ##
+## ------------------------------------------------------------------##
+## - These variables are used to configure the pipeline and provide  ##
+##   variables to pipeline scripts                                   ##
+## - Parameters used for resource deployments are located in the     ##
+##   parameter files in the '.\Parameters' folder                    ##
+#######################################################################
+
+variables:
+
+#############
+## GENERAL ##
+#############
+
+  rgFolderPath: '$(orchestrationPath)/WVD-Imaging-PO-RG'
+  location: <ReplaceWith-Location>
+
+#######################
+## PIPELINE CONTROLS ##
+#######################
+#region pipeline controls
+
+# Pipeline Name
+# -------------
+  pipelineName: 'WVD Imaging Deployment'
+
+# Deployed Module Specs
+# ---------------------
+  resourceGroupModuleName: ResourceGroup
+  resourceGroupModuleVersion: <ReplaceWith-ResourceGroupModuleVersion>
+
+  msiModuleName: UserAssignedIdentities
+  msiModuleVersion: <ReplaceWith-MsiModuleVersion>
+
+  rbacModuleName: RoleAssignments
+  rbacModuleVersion: <ReplaceWith-RbacModuleVersion>
+
+  sharedImageGalleryModuleName: SharedImageGallery
+  sharedImageGalleryModuleVersion: <ReplaceWith-SharedImageGalleryModuleVersion>
+
+  sharedImageDefinitionModuleName: SharedImageDefinition
+  sharedImageDefinitionModuleVersion: <ReplaceWith-SharedImageDefinitionModuleVersion>
+
+  imageTemplateModuleName: ImageTemplates
+  imageTemplateModuleVersion: <ReplaceWith-ImageTemplateModuleVersion>
+
+#endregion
+
+######################
+## SCRIPT VARIABLES ##
+######################
+#region script variables
+
+# ResourceGroup related
+# ---------------------
+  resourcegroupname: <ReplaceWith-Resourcegroupname>
+
+# ImageTemplate related
+# ---------------------
+  # Set to true in case the pipeline should terminate only after the image backing process finished
+  synchronouslyWaitForImageBuild: false

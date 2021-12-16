@@ -1,0 +1,144 @@
+name: $(pipelineName)
+
+parameters:
+- name: enableJobUpdateAssetsStorageAccount
+  displayName: Update Assets Storage Account
+  type: boolean
+  default: true
+- name: enableJobSyncSessionHostVMs
+  displayName: Sync Session Host States
+  type: boolean
+  default: true
+- name: enableJobDeployResourceGroup
+  displayName: Deploy Resource Group
+  type: boolean
+  default: true
+- name: enableJobDeployHostPool
+  displayName: Deploy Host Pool
+  type: boolean
+  default: true
+- name: enableJobDeployDesktopAppGroup
+  displayName: Deploy Desktop Application Group
+  type: boolean
+  default: true
+- name: enableJobDeployRemoteAppGroup01
+  displayName: Deploy Remote Application Group 1
+  type: boolean
+  default: true
+- name: enableJobDeploySessionHosts
+  displayName: Deploy Session Hosts
+  type: boolean
+  default: true
+- name: enableJobDeployApplication
+  displayName: Deploy Application
+  type: boolean
+  default: true
+- name: enableJobDeployWorkspace
+  displayName: Deploy Workspace
+  type: boolean
+  default: true
+- name: enableJobDeployScalingScheduler
+  displayName: Deploy Scaling Scheduler
+  type: boolean
+  default: true
+- name: enableJobSessionHostImageLifecycle
+  displayName: Run Session Host Image Lifecycle
+  type: boolean
+  default: true
+- name: targetEnvironment
+  displayName: Environment(s) to deploy to
+  type: string
+  default: SBX
+  values:
+  - SBX
+  - TEST
+  - PRD
+  - All
+
+variables:
+- template: ..\.global\variables.yml
+- template: variables.yml
+
+trigger: none
+
+stages:
+- stage: SBX
+  condition: |
+    and(
+      succeeded(),
+      in('${{ parameters.targetEnvironment }}', 'All', 'SBX')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(SBX)'
+      vmImage: '$(vmImage-SBX)'
+      poolName: '$(poolName-SBX)'
+      serviceConnection: '$(serviceConnection-SBX)'
+      enableJobUpdateAssetsStorageAccount: '${{ parameters.enableJobUpdateAssetsStorageAccount }}'
+      enableJobSyncSessionHostVMs: '${{ parameters.enableJobSyncSessionHostVMs }}'
+      enableJobDeployResourceGroup: '${{ parameters.enableJobDeployResourceGroup }}'
+      enableJobDeployHostPool: '${{ parameters.enableJobDeployHostPool }}'
+      enableJobDeployDesktopAppGroup: '${{ parameters.enableJobDeployDesktopAppGroup }}'
+      enableJobDeployRemoteAppGroup01: '${{ parameters.enableJobDeployRemoteAppGroup01 }}'
+      enableJobDeploySessionHosts: '${{ parameters.enableJobDeploySessionHosts }}'
+      enableJobDeployApplication: '${{ parameters.enableJobDeployApplication }}'
+      enableJobDeployWorkspace: '${{ parameters.enableJobDeployWorkspace }}'
+      enableJobDeployScalingScheduler: '${{ parameters.enableJobDeployScalingScheduler }}'
+      enableJobSessionHostImageLifecycle: '${{ parameters.enableJobSessionHostImageLifecycle }}'
+
+- stage: TEST
+  condition: |
+    and(
+      or(
+        succeeded(),
+        in('${{ parameters.targetEnvironment }}', 'TEST')
+      ),
+      in('${{ parameters.targetEnvironment }}', 'All', 'TEST')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(TEST)'
+      vmImage: '$(vmImage-TEST)'
+      poolName: '$(poolName-TEST)'
+      serviceConnection: '$(serviceConnection-TEST)'
+      enableJobUpdateAssetsStorageAccount: '${{ parameters.enableJobUpdateAssetsStorageAccount }}'
+      enableJobSyncSessionHostVMs: '${{ parameters.enableJobSyncSessionHostVMs }}'
+      enableJobDeployResourceGroup: '${{ parameters.enableJobDeployResourceGroup }}'
+      enableJobDeployHostPool: '${{ parameters.enableJobDeployHostPool }}'
+      enableJobDeployDesktopAppGroup: '${{ parameters.enableJobDeployDesktopAppGroup }}'
+      enableJobDeployRemoteAppGroup01: '${{ parameters.enableJobDeployRemoteAppGroup01 }}'
+      enableJobDeploySessionHosts: '${{ parameters.enableJobDeploySessionHosts }}'
+      enableJobDeployApplication: '${{ parameters.enableJobDeployApplication }}'
+      enableJobDeployWorkspace: '${{ parameters.enableJobDeployWorkspace }}'
+      enableJobDeployScalingScheduler: '${{ parameters.enableJobDeployScalingScheduler }}'
+      enableJobSessionHostImageLifecycle: '${{ parameters.enableJobSessionHostImageLifecycle }}'
+
+- stage: PRD
+  condition: |
+    and(
+      or(
+        succeeded(),
+        in('${{ parameters.targetEnvironment }}', 'PRD')
+      ),
+      in('${{ parameters.targetEnvironment }}', 'All', 'PRD')
+    )
+  jobs:
+  - template: PipelineTemplates/template.env.yml
+    parameters:
+      environment: '$(PRD)'
+      vmImage: '$(vmImage-PRD)'
+      poolName: '$(poolName-PRD)'
+      serviceConnection: '$(serviceConnection-PRD)'
+      enableJobUpdateAssetsStorageAccount: '${{ parameters.enableJobUpdateAssetsStorageAccount }}'
+      enableJobSyncSessionHostVMs: '${{ parameters.enableJobSyncSessionHostVMs }}'
+      enableJobDeployResourceGroup: '${{ parameters.enableJobDeployResourceGroup }}'
+      enableJobDeployHostPool: '${{ parameters.enableJobDeployHostPool }}'
+      enableJobDeployDesktopAppGroup: '${{ parameters.enableJobDeployDesktopAppGroup }}'
+      enableJobDeployRemoteAppGroup01: '${{ parameters.enableJobDeployRemoteAppGroup01 }}'
+      enableJobDeploySessionHosts: '${{ parameters.enableJobDeploySessionHosts }}'
+      enableJobDeployApplication: '${{ parameters.enableJobDeployApplication }}'
+      enableJobDeployWorkspace: '${{ parameters.enableJobDeployWorkspace }}'
+      enableJobDeployScalingScheduler: '${{ parameters.enableJobDeployScalingScheduler }}'
+      enableJobSessionHostImageLifecycle: '${{ parameters.enableJobSessionHostImageLifecycle }}'

@@ -1,0 +1,38 @@
+#######################################################################
+##                                NOTE                               ##
+## ------------------------------------------------------------------##
+## - These variables are used to configure the pipeline and provide  ##
+##   variables to pipeline scripts                                   ##
+## - They represent 'global' variables that are the same across all  ##
+##   pipelines                                                       ##
+#######################################################################
+
+variables:
+  #############
+  ## GENERAL ##
+  #############
+  orchestrationPath: Workloads/WVD/Environments/template-orchestrated
+  orchestrationFunctionsPath: 'Workloads/WVD/OrchestrationSources/SharedDeploymentFunctions'
+  wvdUploadsPath: Workloads/WVD/OrchestrationSources/Uploads
+
+  # Deployment Environments
+  #########################
+
+  # Environments
+  SBX: <ReplaceWith-SBX> # e.g. SBX: WVDSBX
+  TEST: <ReplaceWith-TEST> # e.g. TEST: WVDTEST
+  PRD: <ReplaceWith-PRD> # e.g. PRD: WVDPRD
+
+  # Build Host
+  vmImage-SBX: '' # '<ReplaceWith-ImageName>' if applicable e.g. vmImage-SBX: 'ubuntu-latest'
+  vmImage-TEST: '' # '<ReplaceWith-ImageName>' if applicable e.g. vmImage-TEST: 'ubuntu-latest'
+  vmImage-PRD: '' # '<ReplaceWith-ImageName>' if applicable e.g. vmImage-PRD: 'ubuntu-latest'
+
+  poolName-SBX: <ReplaceWith-PoolName-SBX> # e.g. poolname-SBX: 'SBXHostPool'
+  poolName-TEST: <ReplaceWith-PoolName-TEST> # e.g. poolname-TEST: 'TESTHostPool'
+  poolName-PRD: <ReplaceWith-PoolName-PRD> # e.g. poolname-PRD: 'PRDHostPool'
+
+  # Service Connection
+  serviceConnection-SBX: <ReplaceWith-ServiceConnection-SBX> # e.g. serviceConnection-SBX: 'SBXSubscription'
+  serviceConnection-TEST: <ReplaceWith-ServiceConnection-TEST> # e.g. serviceConnection-TEST: 'TESTSubscription'
+  serviceConnection-PRD: <ReplaceWith-ServiceConnection-PRD> # e.g. serviceConnection-PRD: 'PRDSubscription'

@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "imageDefinitionName": {
+            "value": "<ReplaceWith-ImageDefinitionName>"
+        },
+        "galleryName": {
+            "value": "<ReplaceWith-GalleryName>"
+        },
+        "osType": {
+            "value": "Windows"
+        },
+        "osState": {
+            "value": "Generalized"
+        },
+        "publisher": {
+            "value": "<ReplaceWith-Publisher>"
+        },
+        "offer": {
+            "value": "<ReplaceWith-Offer>"
+        },
+        "sku": {
+            "value": "<ReplaceWith-Sku>"
+        },
+        "minRecommendedvCPUs": {
+            "value": <ReplaceWith-MinRecommendedvCPUs>
+        },
+        "maxRecommendedvCPUs": {
+            "value": <ReplaceWith-MaxRecommendedvCPUs>
+        },
+        "minRecommendedMemory": {
+            "value": <ReplaceWith-MinRecommendedMemory>
+        },
+        "maxRecommendedMemory": {
+            "value": <ReplaceWith-MaxRecommendedMemory>
+        },
+        "hyperVGeneration": {
+            "value": "<ReplaceWith-HyperVGeneration>"
+        }
+    }
+}

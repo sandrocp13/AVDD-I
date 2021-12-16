@@ -1,0 +1,12 @@
+{
+    "fileSharePolicyMaps": [
+        {
+            "policyName": "<ReplaceWith-PolicyName>",
+            "items": [
+                {
+                    "StorageAccountName": "<ReplaceWith-StorageAccountName>"
+                }
+            ]
+        }
+    ]
+}
